@@ -74,7 +74,9 @@ Gnome       : 3.28.2
 ### Dataset
 * The dataset is taken from [here](https://www.kaggle.com/reasat/banglawriting).
 * only the **converted**  sub-folder within the **converted** folder is used as the input data 
+
 ** Notebooks Used as Reference**
+
 * https://www.kaggle.com/reasat/extract-word-image-and-label
 * run **./en1_images2words**
 ```python
