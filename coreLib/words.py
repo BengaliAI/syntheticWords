@@ -115,26 +115,6 @@ def getRandomSyntheticData(grapheme_list,
     imgs=[]
     # iterate over the list
     for grapheme in grapheme_list:
-        # replace quote--> check
-        if "'" in grapheme:
-            grapheme=grapheme.replace("'","")
-       
-        # additional--> check
-        if 'ঁ' in grapheme:
-            grapheme=grapheme.replace('ঁ','')
-            # add this manually
-            grapheme_df=  label_df.loc[label_df.grapheme=='ঁ']
-            img_ids    =  grapheme_df.image_id.tolist()
-            if len(img_ids)>0:
-                # select a random one
-                img_id     =  random.choice(img_ids)
-                # get image
-                img        =  getGraphemeImg(img_id=img_id,
-                                               png_dir=png_dir,
-                                               img_height=img_height)
-                imgs.append(img)
-
-            
         
         # get corresponding image ids for that grapheme
         grapheme_df=  label_df.loc[label_df.grapheme==grapheme]
@@ -148,24 +128,20 @@ def getRandomSyntheticData(grapheme_list,
                                             img_height=img_height)
             imgs.append(img)
         else:
-            return [None,grapheme]
+            return None
 
-    # brute bad check for empty ops    
-    if len(imgs)==0:
-        return None
+    # corner case
+    if len(imgs)==1:
+        img=imgs[0]
+        img=padImage(img=img,
+                    data_dim=data_dim)
+        return img
     else:
-        # corner case
-        if len(imgs)==1:
-            img=imgs[0]
-            img=padImage(img=img,
-                        data_dim=data_dim)
-            return img
-        else:
-            # combine
-            img=np.concatenate(imgs,axis=1)
-            # pad 
-            img=padImage(img=img,
-                        data_dim=data_dim)
-            return img
+        # combine
+        img=np.concatenate(imgs,axis=1)
+        # pad 
+        img=padImage(img=img,
+                    data_dim=data_dim)
+        return img
 #--------------------------------------------------------------------------------------------
 
