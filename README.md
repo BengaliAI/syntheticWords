@@ -71,7 +71,7 @@ Gnome       : 3.28.2
  #error:OpenCV(4.2.0) /io/opencv/modules/imgcodecs/src/loadsave.cpp:715: error: (-215:Assertion failed) !_img.empty() in function 'imwrite'
 
 ```
-* run **./main.py**
+* run **./data.py**
 ```python
     usage: data.py [-h] data_dir save_dir
 
