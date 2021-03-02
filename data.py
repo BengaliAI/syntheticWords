@@ -48,12 +48,12 @@ def to_tfrecord(image_paths,save_dir,r_num):
             target_path=str(image_path).replace('images','targets')
             #imae
             with(open(image_path,'rb')) as fid:
-                image_png_bytes=fid.read()
+                image_jpg_bytes=fid.read()
             # target
             with(open(target_path,'rb')) as fid:
-                target_png_bytes=fid.read()
-            data ={ 'image':_bytes_feature(image_png_bytes),
-                    'target':_bytes_feature(target_png_bytes)
+                target_jpg_bytes=fid.read()
+            data ={ 'image':_bytes_feature(image_jpg_bytes),
+                    'target':_bytes_feature(target_jpg_bytes)
             }
             # write
             features=tf.train.Features(feature=data)
@@ -84,39 +84,23 @@ def main(args):
     '''
     data_dir = args.data_dir
     # path of images dir
-    train_img_dir  = os.path.join(data_dir,'train',"images")
-    test_img_dir   = os.path.join(data_dir,'test',"images")
-    # check
-    if not os.path.exists(train_img_dir):
-        raise ValueError("Wrong directory given for images")
-    
-    if not os.path.exists(test_img_dir):
-        raise ValueError("Wrong directory given for images")
+    img_dir  = os.path.join(data_dir,"images")
     
     # img paths
-    train_paths=[img_path for img_path in tqdm(glob(os.path.join(train_img_dir,'*.*')))]
-    eval_paths =[img_path for img_path in tqdm(glob(os.path.join(test_img_dir,'*.*')))]
+    img_paths=[img_path for img_path in tqdm(glob(os.path.join(img_dir,'*.*')))]
     
     
     # tfrecord saving directories 
     save_dir = args.save_dir
     rec_dir  = create_dir(save_dir,'tfrecords')
-    train_rec= create_dir(rec_dir,'train')
-    eval_rec = create_dir(rec_dir,'eval')
     
-    LOG_INFO(f"Train records:{train_rec}")
-    LOG_INFO(f"Eval records:{eval_rec}")
-
     # tfrecords
-    genTFRecords(train_paths,train_rec)
-    genTFRecords(eval_paths,eval_rec)
-
-    LOG_INFO(f'Train Images:{len(train_paths)} Eval Images:{len(eval_paths)}')
-
+    genTFRecords(img_paths,rec_dir)
+    
 # ---------------------------------------------------------
 if __name__=='__main__':
-    parser = argparse.ArgumentParser(description='script to create synthetic data for style transfer')
-    parser.add_argument('data_dir',help="The path to the folder that contains test and train") 
+    parser = argparse.ArgumentParser(description='script to create synthetic tfrecords data for style transfer')
+    parser.add_argument('data_dir',help="The path to the folder that contains images and targets") 
     parser.add_argument('save_dir',help="The path to the folder where the tfrecords will be saved") 
     args = parser.parse_args()
     main(args)

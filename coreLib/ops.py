@@ -311,8 +311,8 @@ def cleanDataset(df):
 #--------------------
 # helper functions
 #--------------------
-def save_dataset(data_path,
-                ds_df,
+def save_dataset(images2words_path,
+                dataset,
                 save_path,
                 label_df,
                 raw_path,
@@ -321,35 +321,35 @@ def save_dataset(data_path,
     '''
         saves images and targets 
         args:
-            data_path      :    location of images folder that contains images 2 words data in png
-            ds_df          :    dataframe that contains labels and grapheme
-            save_path      :    location of the mode(test/train) folder
-            label_df       :    contains the labeled data from bengalai grapheme dataset  
-            raw_path       :    directory that contains the raw grapheme images
-            img_height     :    height for each grapheme
-            data_dim       :    dimension of word images 
+            images2words_path       :    location of images folder that contains images 2 words data in png
+            dataset                 :    dataframe that contains labels and grapheme
+            save_path               :    location of the  folder to save images and targets
+            label_df                :    contains the labeled data from bengalai grapheme dataset  
+            raw_path                :    directory that contains the raw grapheme images
+            img_height              :    height for each grapheme
+            data_dim                :    dimension of word images 
             
 
     '''
     count=0
     images_path =create_dir(save_path,'images')
     targets_path=create_dir(save_path,'targets')
-    for iid,grapheme_list in tqdm(zip(ds_df['image_id'],ds_df['graphemes']),total=len(ds_df)):
+    for iid,grapheme_list in tqdm(zip(dataset['image_id'],dataset['graphemes']),total=len(dataset)):
         # img
         img=getRandomSyntheticData(grapheme_list=grapheme_list,
                                     label_df=label_df,
                                     png_dir=raw_path,
                                     img_height=img_height,
                                     data_dim=data_dim)
-        cv2.imwrite(os.path.join(images_path,f'{count}.png'),img)
+        cv2.imwrite(os.path.join(images_path,f'{count}.jpg'),img)
         # tgt
-        img=cv2.imread(os.path.join(data_path,iid),0)
+        img=cv2.imread(os.path.join(images2words_path,iid),0)
         img=cleanImage(img=img,
                        img_height=img_height)
 
         img=padImage(img=img,
                      data_dim=data_dim)
-        cv2.imwrite(os.path.join(targets_path,f'{count}.png'),img)
+        cv2.imwrite(os.path.join(targets_path,f'{count}.jpg'),img)
 
         count+=1
 #--------------------
@@ -360,8 +360,7 @@ def createDataset(dataset,
                   data_dim,
                   raw_path,
                   images2words_path,
-                  save_path,
-                  split=0.1):
+                  save_path):
     '''
         creates the images and targets for style transfer training
         args:
@@ -371,7 +370,6 @@ def createDataset(dataset,
             images2words_path   :    location of images folder that contains images 2 words data in png
             raw_path            :    directory that contains the raw grapheme images
             save_path           :    location to save the data
-            split               :    float percent of eval split (default 0.1 i.e-10%)
             
             
     '''
@@ -379,28 +377,14 @@ def createDataset(dataset,
     label_df=pd.read_csv(LABEL_CSV)
     # create structre
     save_path=create_dir(save_path,'data')
-    # test train
-    train_path=create_dir(save_path,'train')
-    test_path =create_dir(save_path,'test')
-    # split
-    nb_train=int(len(dataset)*(1-split))
-    train_df=dataset.head(nb_train)
-    test_df =dataset.tail(len(dataset)-nb_train)
     # save
-    LOG_INFO("Saving Training Data")
-    save_dataset(data_path=images2words_path,
-                ds_df=train_df,
-                save_path=train_path,
+    LOG_INFO("Saving  Data")
+    save_dataset(images2words_path=images2words_path,
+                dataset=dataset,
+                save_path=save_path,
                 label_df=label_df,    
                 raw_path=raw_path,
                 img_height=img_height,
                 data_dim=data_dim)
 
-    LOG_INFO("Saving Testing Data")
-    save_dataset(data_path=images2words_path,
-                ds_df=test_df,
-                save_path=test_path,
-                label_df=label_df,    
-                raw_path=raw_path,
-                img_height=img_height,
-                data_dim=data_dim)
+    
