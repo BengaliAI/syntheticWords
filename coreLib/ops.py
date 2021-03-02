@@ -269,6 +269,7 @@ def clean_red_flags(df,dict_words):
     count=Counter(df['label'].tolist())
     df_count = pd.DataFrame.from_dict(count, orient='index').reset_index()
     df_count = df_count.rename(columns={'index':'label', 0:'count'})
+    
     # single instance
     df_count=df_count.loc[df_count["count"]==1]
     # check existance of problematic words
@@ -276,11 +277,33 @@ def clean_red_flags(df,dict_words):
     for label in tqdm(df_count.label):
         if label not in dict_words:
             red_flags.append(label)
+    
     # clean dataframe
     df['label']=df['label'].progress_apply(lambda x: x if x not in red_flags else np.nan)
     df.dropna(inplace=True)
     return df
    
+def sampleSingle(df):
+    '''
+        randomly samples a single image for each label
+        args:
+            df         :  the data frame that contains images2words image_id,label and graphemes
+    '''
+    dfs=[]
+    # find labels
+    unique_labels=set(df['label'].tolist())
+    for label in tqdm(unique_labels):
+        # label df
+        _df=df.loc[df.label==label]
+        # sample
+        _df=_df.sample(n=1)
+        #assert(len(_df)==1,"Houston we've got a problem")
+        # append
+        dfs.append(_df)
+    df=pd.concat(dfs,ignore_index=True)
+    return df
+
+
 #--------------------
 # ops
 #--------------------
@@ -306,6 +329,10 @@ def cleanDataset(df):
     LOG_INFO("Cleaning red flags")
     df=clean_red_flags(df=df,
                        dict_words=dict_words)
+    
+    # sample single
+    LOG_INFO("Sample single")
+    df=sampleSingle(df=df)
     return df
 #--------------------------------images2words------------------------------------------------------------
 #--------------------
@@ -331,7 +358,6 @@ def save_dataset(images2words_path,
             
 
     '''
-    count=0
     images_path =create_dir(save_path,'images')
     targets_path=create_dir(save_path,'targets')
     for iid,grapheme_list in tqdm(zip(dataset['image_id'],dataset['graphemes']),total=len(dataset)):
@@ -341,7 +367,7 @@ def save_dataset(images2words_path,
                                     png_dir=raw_path,
                                     img_height=img_height,
                                     data_dim=data_dim)
-        cv2.imwrite(os.path.join(images_path,f'{count}.jpg'),img)
+        cv2.imwrite(os.path.join(images_path,iid),img)
         # tgt
         img=cv2.imread(os.path.join(images2words_path,iid),0)
         img=cleanImage(img=img,
@@ -349,9 +375,8 @@ def save_dataset(images2words_path,
 
         img=padImage(img=img,
                      data_dim=data_dim)
-        cv2.imwrite(os.path.join(targets_path,f'{count}.jpg'),img)
+        cv2.imwrite(os.path.join(targets_path,iid),img)
 
-        count+=1
 #--------------------
 # ops
 #--------------------

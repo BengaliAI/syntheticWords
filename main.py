@@ -8,6 +8,9 @@
 #--------------------
 import argparse
 import os 
+import json
+import pandas as pd
+from tqdm import tqdm
 
 from coreLib.utils import create_dir,LOG_INFO
 from coreLib.ops import images2words,cleanDataset,createDataset
@@ -53,6 +56,16 @@ def main(args):
                   images2words_path=images2words_path,
                   save_path=save_path)
     
+    
+    # map image_id to labels
+    map_dict={}
+    map_json=os.path.join(os.getcwd(),'resources','dataset.json')
+    for iid,label in tqdm(zip(dataset.image_id.tolist(),dataset.label.tolist()),total=len(dataset)):
+        map_dict[iid]= label
+    # save map
+    with open(map_json, 'w') as fp:
+        json.dump(map_dict, fp, sort_keys=True, indent=4,ensure_ascii=False)
+
     
 #-----------------------------------------------------------------------------------
 

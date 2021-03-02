@@ -13,6 +13,7 @@ import argparse
 import os
 import random
 import tensorflow as tf 
+import json
 
 from coreLib.utils import LOG_INFO,create_dir
 from glob import glob
@@ -21,7 +22,11 @@ from tqdm import tqdm
 # globals
 # ---------------------------------------------------------
 # number of images to store in a tfrecord
-DATA_NUM        = 1024
+DATA_NUM  = 1024
+
+with open(os.path.join(os.getcwd(),'resources','dataset.json'), 'r') as fp:
+    MAP_DICT = json.load(fp)
+    assert type(MAP_DICT)==dict,"Houston we've got a problem" 
 #---------------------------------------------------------------
 def _bytes_feature(value):
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
@@ -45,15 +50,20 @@ def to_tfrecord(image_paths,save_dir,r_num):
     tfrecord_path=os.path.join(save_dir,tfrecord_name)
     with tf.io.TFRecordWriter(tfrecord_path) as writer:    
         for image_path in image_paths:
+            
             target_path=str(image_path).replace('images','targets')
-            #imae
+            #image
             with(open(image_path,'rb')) as fid:
-                image_jpg_bytes=fid.read()
+                image_bytes=fid.read()
             # target
             with(open(target_path,'rb')) as fid:
-                target_jpg_bytes=fid.read()
-            data ={ 'image':_bytes_feature(image_jpg_bytes),
-                    'target':_bytes_feature(target_jpg_bytes)
+                target_bytes=fid.read()
+            #label
+            label=MAP_DICT[os.path.basename(image_path)]
+            
+            data ={ 'image':_bytes_feature(image_bytes),
+                    'target':_bytes_feature(target_bytes),
+                    'label':_bytes_feature(bytes(label,encoding= 'utf-8'))
             }
             # write
             features=tf.train.Features(feature=data)
@@ -62,16 +72,16 @@ def to_tfrecord(image_paths,save_dir,r_num):
             writer.write(serialized)
 
 
-def genTFRecords(__paths,mode_dir):
+def genTFRecords(_paths,mode_dir):
     '''	        
         tf record wrapper
         args:	        
-            __paths   :   all image paths for a mode	        
+            _paths    :   all image paths for a mode	        
             mode_dir  :   location to save the tfrecords	    
     '''
-    for i in tqdm(range(0,len(__paths),DATA_NUM)):
+    for i in tqdm(range(0,len(_paths),DATA_NUM)):
         # paths
-        image_paths= __paths[i:i+DATA_NUM]
+        image_paths= _paths[i:i+DATA_NUM]
         # record num
         r_num=i // DATA_NUM
         # create tfrecord
@@ -86,9 +96,8 @@ def main(args):
     # path of images dir
     img_dir  = os.path.join(data_dir,"images")
     
-    # img paths
-    img_paths=[img_path for img_path in tqdm(glob(os.path.join(img_dir,'*.*')))]
-    
+    # paths    
+    img_paths=[img_path for img_path in glob(os.path.join(img_dir,"*.*"))]
     
     # tfrecord saving directories 
     save_dir = args.save_dir
