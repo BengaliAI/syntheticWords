@@ -144,4 +144,71 @@ def getRandomSyntheticData(grapheme_list,
                     data_dim=data_dim)
         return img
 #--------------------------------------------------------------------------------------------
+def padTextImage(img,
+            data_dim):
+    '''
+        pads an image and resizes to (data_dim,data_dim)
+        args:
+            img         :   numpy array grayscale image
+            data_dim    :   dimension of word images 
+        returns:
+            resized clean image
+    '''
+    # pad up-down
+    h,w  = img.shape
+    d_top=(data_dim-h)//2
+    d_bot=data_dim-h-d_top
+    top_pad=np.ones((d_top,w))*255
+    bot_pad=np.ones((d_bot,w))*255
+    # concat
+    img=np.concatenate([top_pad,img,bot_pad],axis=0)
+    # pad left-right
+    h,w  = img.shape
+    d_left=(data_dim-w)//2
+    d_right=data_dim-w-d_left
+    left_pad =np.ones((h,d_left))*255
+    right_pad=np.ones((h,d_right))*255
+    # concat
+    img=np.concatenate([left_pad,img,right_pad],axis=1)
+    # resize
+    img=img.astype('uint8')    
+    img=cv2.resize(img,(data_dim,data_dim),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
+    return img
+#--------------------------------------------------------------------------------------------
+def getTextImage(text,_font,data_dim):
+    '''
+        create image from text
+        args:
+            text    :   the text to cleate the image of
+            _font   :   the specific sized font to load
+            data_dim:   the final dimension we need the image to be
+        returns:
+            the written text image
+    '''
 
+    WIDTH,HEIGHT=1024,1024
+    # RGB image
+    img = Image.new('RGB', (WIDTH,HEIGHT))
+    # draw object
+    draw = ImageDraw.Draw(img)
+    # text height width
+    w, h = draw.textsize(text, font=_font) 
+    # drawing in the center
+    draw.text(((WIDTH - w) / 2,(HEIGHT - h) / 2), text, font=_font)
+    # grayscale
+    img=img.convert('L')
+    # array
+    img=np.array(img)
+    # iversion
+    img=255-img
+    # strip pads
+    img=stripPads(img,255)
+    # resize-image
+    h,w=img.shape
+    factor=1+(w//data_dim)
+    if w>data_dim:
+        # resize
+        img=cv2.resize(img,(w//factor,h//factor),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
+    img=padTextImage(img,data_dim)
+    return img
+#--------------------------------------------------------------------------------------------

@@ -14,7 +14,18 @@ Graphics    : Intel® UHD Graphics 620 (Kabylake GT2)
 Gnome       : 3.28.2  
 ```
 # Setup
-* ```pip3 install -r requirements.txt```
+>Assuming the **libraqm** complex layout is working properly, you can skip to **python requirements**. 
+*  ```sudo apt-get install libfreetype6-dev libharfbuzz-dev libfribidi-dev gtk-doc-tools```
+* Install libraqm as described [here](https://github.com/HOST-Oman/libraqm)
+* ```sudo ldconfig``` (librarqm local repo)
+
+**python requirements**
+
+* ```pip3 install pillow --global-option="build_ext" --global-option="--enable-freetype"```
+* ```pip3 install -r requirements.txt``` 
+> Its better to use a virtual environment 
+
+
 
 # Synthetic words
 * download the **words.csv** from [here](https://www.kaggle.com/reasat/extract-word-image-and-label) and keep in under **resources** folder
@@ -43,7 +54,7 @@ Gnome       : 3.28.2
 ```
 
 
-## Execution
+## StyleTransferTest Execution
 * run **./main.py**
 ```python
     usage: Style transfer model synthetic data generation script
@@ -91,6 +102,10 @@ Gnome       : 3.28.2
 * [word2grapheme](https://www.kaggle.com/reasat/extract-word-image-and-label) (@author: [Tahsin Reasat](https://www.kaggle.com/reasat))
 
 
+## RecognizerTraining 
+**IN PROGRESS**
+
+
 # TODO
 - [x] cleanup and merge scripts
 - [x] Add **tfrecords**
@@ -98,3 +113,9 @@ Gnome       : 3.28.2
     * clean empty lexicons
     * check non-existant graphemes
 
+**Create a dataset to train an initial recognizer**
+- [ ] Handwriten Images (original ones) -> Filtered based on dictionary
+- [ ] FontFace Images  from dictionary words:
+- [ ] dictionray to Grapheme
+- [ ] add **n** examples for each word in dictionary
+- [ ] create **K** sample for random grapheme combinations

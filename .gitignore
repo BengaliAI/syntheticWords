@@ -131,3 +131,4 @@ dmypy.json
 # locals
 bengalai/*
 resources/words.csv
+debug.ipynb 

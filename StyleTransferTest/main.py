@@ -11,10 +11,11 @@ import os
 import json
 import pandas as pd
 from tqdm import tqdm
+import sys 
+sys.path.append("../")
 
 from coreLib.utils import create_dir,LOG_INFO
 from coreLib.ops import images2words,cleanDataset,createDataset
-
 
 
 #--------------------

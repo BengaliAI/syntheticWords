@@ -14,13 +14,18 @@ import os
 import random
 import tensorflow as tf 
 import json
-
+import sys 
+sys.path.append("../")
 from coreLib.utils import LOG_INFO,create_dir
 from glob import glob
 from tqdm import tqdm
+
+
+sys.path.append('..')
 # ---------------------------------------------------------
 # globals
 # ---------------------------------------------------------
+
 # number of images to store in a tfrecord
 DATA_NUM  = 1024
 
