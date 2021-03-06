@@ -17,7 +17,7 @@ from collections import Counter
 from glob import glob
 from tqdm import tqdm
 from .utils import LOG_INFO,create_dir
-from .words import getRandomSyntheticData,cleanImage,padImage
+from .words import getRandomSyntheticData,cleanImage,padImage,get_data_frames,clean_non_found_graphemes,getTextImage
 
 
 tqdm.pandas()
@@ -37,10 +37,10 @@ SYMBOLS+=[str(i) for i in range(10)]
 #--------------------
 # RESOURCES
 #--------------------
-LABEL_CSV   =   os.path.join(os.getcwd(),'resources','label.csv')
-CLASS_CSV   =   os.path.join(os.getcwd(),'resources','classes.csv')
-FONT_PATH   =   os.path.join(os.getcwd(),'resources','font.ttf')
-DICT_CSV    =   os.path.join(os.getcwd(),'resources','words.csv')
+LABEL_CSV   =   os.path.join(os.path.dirname(os.getcwd()),'resources','label.csv')
+CLASS_CSV   =   os.path.join(os.path.dirname(os.getcwd()),'resources','classes.csv')
+FONT_PATH   =   os.path.join(os.path.dirname(os.getcwd()),'resources','font.ttf')
+DICT_CSV    =   os.path.join(os.path.dirname(os.getcwd()),'resources','words.csv')
 
 #--------------------------------images2words------------------------------------------------------------
 #--------------------
@@ -130,133 +130,6 @@ def images2words(converted_path,save_path):
 #--------------------
 # helper functions
 #--------------------
-def get_data_frames(class_map_csv,
-                    grapheme_labels_csv):
-    '''
-        reads and creates dataframe for roots,consonant_diacritic,vowel_diacritic and graphemes
-        args:
-            class_map_csv        : path of classes.csv
-            grapheme_labels_csv  : path of labels.csv
-        returns:
-            tuple(df_root,df_vd,df_cd,df_grapheme)
-            df_root          :     dataframe for grapheme roots
-            df_vd            :     dataframe for vowel_diacritic 
-            df_cd            :     dataframe for consonant_diacritic
-            df_grapheme      :     dataframe for graphemes
-            
-    '''
-    # read class map
-    df_map=pd.read_csv(class_map_csv)
-    # get grapheme roots
-    df_root = df_map.groupby('component_type').get_group('grapheme_root')
-    df_root.index = df_root['label']
-    df_root = df_root.drop(columns = ['label','component_type'])
-    # get vowel_diacritic
-    df_vd = df_map.groupby('component_type').get_group('vowel_diacritic')
-    df_vd.index = df_vd['label']
-    df_vd = df_vd.drop(columns = ['label','component_type'])
-    # get consonant_diacritic
-    df_cd = df_map.groupby('component_type').get_group('consonant_diacritic')
-    df_cd.index = df_cd['label']
-    df_cd = df_cd.drop(columns = ['label','component_type'])
-    # get grapheme labels
-    df_grapheme=pd.read_csv(grapheme_labels_csv)
-    # filter columns
-    df_grapheme=df_grapheme[['image_id','grapheme']]
-    return df_root,df_vd,df_cd,df_grapheme
-
-def word2grapheme(word,
-                  df_root,
-                  df_vd,
-                  df_cd):
-    '''
-        creates a grapheme list for a given word
-        args:
-            word             :     the word to find grapheme for
-            df_root          :     dataframe for grapheme roots
-            df_vd            :     dataframe for vowel_diacritic 
-            df_cd            :     dataframe for consonant_diacritic
-            
-        returns:
-            list of graphemes
-    '''
-    graphemes = []
-    grapheme = ''
-    i = 0
-    # iterate over the word
-    while i < len(word):    
-        grapheme+=(word[i])
-        # pass for '্' 
-        if word[i] in ['\u200d','্']:
-            pass 
-        # special case for 'ঁ'
-        elif  word[i] == 'ঁ':
-            graphemes.append(grapheme)
-            grapheme = ''
-        # if char in root    
-        elif word[i] in df_root.values:
-            if i+1 ==len(word):
-                graphemes.append(grapheme)
-            elif word[i+1] not in ['্', '\u200d', 'ঁ'] + list(df_vd.values):
-                graphemes.append(grapheme)
-                grapheme = ''
-        # if char in vd 
-        elif word[i] in df_vd.values:
-            if i+1 ==len(word):
-                graphemes.append(grapheme)
-            elif word[i+1] != 'ঁ':
-                graphemes.append(grapheme)
-                grapheme = ''                
-
-        
-        
-        i = i+1
-    
-    # filter  preceding '্' and cds+vds 
-    #-----------> this is an aditional cleanup
-    for grapheme in graphemes:
-        if grapheme in list(df_cd.values)+ list(df_vd.values):
-            graphemes.remove(grapheme)
-    
-    
-        
-    return graphemes
-
-def clean_non_found_graphemes(df,
-                              df_grapheme,
-                              df_root,
-                              df_vd,
-                              df_cd):
-    '''
-       cleans non found graphemes
-       args:
-           df               :     dataframe for image and label in image2words 
-           df_grapheme      :     dataframe for graphemes
-           df_root          :     dataframe for grapheme roots
-           df_vd            :     dataframe for vowel_diacritic 
-           df_cd            :     dataframe for consonant_diacritic
-            
-           
-    '''
-    # get graphemes from labels
-    df['graphemes']=df['label'].progress_apply(lambda x: word2grapheme(x,df_root,df_vd,df_cd))
-    # find unique graphemes
-    unique_graphemes=[]
-    for grapheme_list in tqdm(df.graphemes.tolist()):
-        unique_graphemes+=grapheme_list
-    unique_graphemes=list(set(unique_graphemes))
-    # find non found graphemes
-    non_found_graphemes=[]
-    for grapheme in tqdm(unique_graphemes):
-        subset_df_grapheme=df_grapheme.loc[df_grapheme.grapheme==grapheme]
-        if len(subset_df_grapheme)==0:
-            non_found_graphemes.append(grapheme)
-    # eliminate not found graphemes
-    ##--> if the grapheme list intersects with a non found grapheme set it to nan
-    df["not_found"]=df.graphemes.progress_apply(lambda x: np.nan if len(set(non_found_graphemes) & set(x))>0 else x)
-    df.dropna(inplace=True)
-    df=df[['image_id','label','graphemes']]
-    return df 
 
 def clean_red_flags(df,dict_words):
     '''
@@ -307,7 +180,7 @@ def sampleSingle(df):
 #--------------------
 # ops
 #--------------------
-def cleanDataset(df):
+def cleanStyleTransferDataset(df):
     '''
         cleans the images2words dataset
         args:
@@ -324,7 +197,9 @@ def cleanDataset(df):
                                  df_grapheme=df_grapheme,
                                  df_root=df_root,
                                  df_vd=df_vd,
-                                 df_cd=df_cd)
+                                 df_cd=df_cd,
+                                 data_column="label",
+                                 relevant_columns=["image_id","label"])
     # red flags
     LOG_INFO("Cleaning red flags")
     df=clean_red_flags(df=df,
@@ -334,11 +209,11 @@ def cleanDataset(df):
     LOG_INFO("Sample single")
     df=sampleSingle(df=df)
     return df
-#--------------------------------images2words------------------------------------------------------------
+#--------------------------------StyleTransferDataset------------------------------------------------------------
 #--------------------
 # helper functions
 #--------------------
-def save_dataset(images2words_path,
+def save_style_transfer_dataset(images2words_path,
                 dataset,
                 save_path,
                 label_df,
@@ -380,7 +255,7 @@ def save_dataset(images2words_path,
 #--------------------
 # ops
 #--------------------
-def createDataset(dataset,
+def createStyleTransferDataset(dataset,
                   img_height,
                   data_dim,
                   raw_path,
@@ -404,12 +279,12 @@ def createDataset(dataset,
     save_path=create_dir(save_path,'data')
     # save
     LOG_INFO("Saving  Data")
-    save_dataset(images2words_path=images2words_path,
-                dataset=dataset,
-                save_path=save_path,
-                label_df=label_df,    
-                raw_path=raw_path,
-                img_height=img_height,
-                data_dim=data_dim)
+    save_style_transfer_dataset(images2words_path=images2words_path,
+                                dataset=dataset,
+                                save_path=save_path,
+                                label_df=label_df,    
+                                raw_path=raw_path,
+                                img_height=img_height,
+                                data_dim=data_dim)
 
     

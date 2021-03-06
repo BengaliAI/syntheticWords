@@ -15,7 +15,7 @@ import sys
 sys.path.append("../")
 
 from coreLib.utils import create_dir,LOG_INFO
-from coreLib.ops import images2words,cleanDataset,createDataset
+from coreLib.ops import images2words,cleanStyleTransferDataset,createStyleTransferDataset
 
 
 #--------------------
@@ -45,18 +45,18 @@ def main(args):
     dataset,images2words_path=images2words(converted_path=converted_path,
                                            save_path=save_path)
     LOG_INFO("cleaning dataset")
-    dataset=cleanDataset(df=dataset)
+    dataset=cleanStyleTransferDataset(df=dataset)
     # save
     dataset.to_csv(os.path.join(os.getcwd(),'resources',"dataset.csv"),index=False)
     
     LOG_INFO("Dataset creation")
-    createDataset(dataset=dataset,
-                  img_height=img_height,
-                  data_dim=data_dim,
-                  raw_path=raw_path,
-                  images2words_path=images2words_path,
-                  save_path=save_path)
-    
+    createStyleTransferDataset(dataset=dataset,
+                                img_height=img_height,
+                                data_dim=data_dim,
+                                raw_path=raw_path,
+                                images2words_path=images2words_path,
+                                save_path=save_path)
+                    
     
     # map image_id to labels
     map_dict={}
