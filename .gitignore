@@ -132,3 +132,4 @@ dmypy.json
 bengalai/*
 resources/words.csv
 debug.ipynb 
+RecognizerTraining/resources/*
