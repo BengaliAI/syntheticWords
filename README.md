@@ -52,7 +52,65 @@ Gnome       : 3.28.2
     ├── converted
     └── RAW
 ```
+## RecognizerTraining 
+* run **./main.py**
+```python
 
+    usage: Recognizer Training Dataset Creating Script [-h]
+                                                    [--img_height IMG_HEIGHT]
+                                                    [--data_dim DATA_DIM]
+                                                    [--num_samples_dict NUM_SAMPLES_DICT]
+                                                    [--total_dict TOTAL_DICT]
+                                                    data_path save_path
+
+    positional arguments:
+    data_path             Path of the data folder that contains converted and
+                            raw folder from ReadMe.md)
+    save_path             Path of the directory to save the dataset
+
+    optional arguments:
+    -h, --help            show this help message and exit
+    --img_height IMG_HEIGHT
+                            fixed height for each grapheme: default=128
+    --data_dim DATA_DIM   dimension of word images: default=256
+    --num_samples_dict NUM_SAMPLES_DICT
+                            number of samples to create per dictionary word:
+                            default=5
+    --total_dict TOTAL_DICT
+                            the total number of words to take from dict:
+                            default=20000
+
+```
+* Exception in execution:
+```python
+ #LOG     :error in creating image:183_16_0.jpg label:শ্রেষ্ঠ,
+ #error:OpenCV(4.2.0) /io/opencv/modules/imgcodecs/src/loadsave.cpp:715: error: (-215:Assertion failed) !_img.empty() in function 'imwrite'
+
+ #LOG     :error in creating image:256_14_1.jpg label:ব,
+ #error:OpenCV(4.2.0) /io/opencv/modules/imgcodecs/src/loadsave.cpp:715: error: (-215:Assertion failed) !_img.empty() in function 'imwrite'
+
+```
+
+**Execution Result**:
+* creates a **dataset.csv** which holds image id,label and graphemes
+* creates a folder callder **data** in **save_path** where :
+    * **dict** folder contains the training images: synthetic grapheme based : **99974**  (loss of 26 images due to impropercatenation)
+    * **hand** folder contains the testing images: purely hand written images: **17291**
+
+* **To Store in h5**: run **./h5store.py**
+```python
+    usage: h5store.py [-h] data_dir save_dir
+
+    script to create h5store for reconizer training
+
+    positional arguments:
+    data_dir    The path to the folder that contains dict and hand images
+    save_dir    The path to the folder where the h5 stores will be saved
+
+    optional arguments:
+    -h, --help  show this help message and exit
+
+```
 
 ## StyleTransferTest Execution
 * run **./main.py**
@@ -99,35 +157,6 @@ Gnome       : 3.28.2
 * The zipped dataset is uploaded [here](https://www.kaggle.com/nazmuddhohaansary/banglawords)
 
 
-## RecognizerTraining 
-* run **./main.py**
-```python
-
-    usage: Recognizer Training Dataset Creating Script [-h]
-                                                    [--img_height IMG_HEIGHT]
-                                                    [--data_dim DATA_DIM]
-                                                    [--num_samples_dict NUM_SAMPLES_DICT]
-                                                    [--total_dict TOTAL_DICT]
-                                                    data_path save_path
-
-    positional arguments:
-    data_path             Path of the data folder that contains converted and
-                            raw folder from ReadMe.md)
-    save_path             Path of the directory to save the dataset
-
-    optional arguments:
-    -h, --help            show this help message and exit
-    --img_height IMG_HEIGHT
-                            fixed height for each grapheme: default=128
-    --data_dim DATA_DIM   dimension of word images: default=256
-    --num_samples_dict NUM_SAMPLES_DICT
-                            number of samples to create per dictionary word:
-                            default=5
-    --total_dict TOTAL_DICT
-                            the total number of words to take from dict:
-                            default=20000
-
-```
 
 # References
 
