@@ -97,13 +97,41 @@ Gnome       : 3.28.2
 
 ```
 * The zipped dataset is uploaded [here](https://www.kaggle.com/nazmuddhohaansary/banglawords)
-# References
-
-* [word2grapheme](https://www.kaggle.com/reasat/extract-word-image-and-label) (@author: [Tahsin Reasat](https://www.kaggle.com/reasat))
 
 
 ## RecognizerTraining 
-**IN PROGRESS**
+* run **./main.py**
+```python
+
+    usage: Recognizer Training Dataset Creating Script [-h]
+                                                    [--img_height IMG_HEIGHT]
+                                                    [--data_dim DATA_DIM]
+                                                    [--num_samples_dict NUM_SAMPLES_DICT]
+                                                    [--total_dict TOTAL_DICT]
+                                                    data_path save_path
+
+    positional arguments:
+    data_path             Path of the data folder that contains converted and
+                            raw folder from ReadMe.md)
+    save_path             Path of the directory to save the dataset
+
+    optional arguments:
+    -h, --help            show this help message and exit
+    --img_height IMG_HEIGHT
+                            fixed height for each grapheme: default=128
+    --data_dim DATA_DIM   dimension of word images: default=256
+    --num_samples_dict NUM_SAMPLES_DICT
+                            number of samples to create per dictionary word:
+                            default=5
+    --total_dict TOTAL_DICT
+                            the total number of words to take from dict:
+                            default=20000
+
+```
+
+# References
+
+* [word2grapheme](https://www.kaggle.com/reasat/extract-word-image-and-label) (@author: [Tahsin Reasat](https://www.kaggle.com/reasat))
 
 
 # TODO
@@ -114,8 +142,8 @@ Gnome       : 3.28.2
     * check non-existant graphemes
 
 **Create a dataset to train an initial recognizer**
-- [ ] Handwriten Images (original ones) -> Filtered based on dictionary
-- [ ] FontFace Images  from dictionary words:
-- [ ] dictionray to Grapheme
-- [ ] add **n** examples for each word in dictionary
+- [x] Handwriten Images (original ones) -> Filtered based on dictionary
+- [x] dictionray to Grapheme
+- [x] add **n** examples for each word in dictionary
 - [ ] create **K** sample for random grapheme combinations
+- [ ] FontFace Images  from dictionary words:

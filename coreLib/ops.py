@@ -209,6 +209,56 @@ def cleanStyleTransferDataset(df):
     LOG_INFO("Sample single")
     df=sampleSingle(df=df)
     return df
+#--------------------------------cleanRecogdataset------------------------------------------------------------
+#--------------------
+# ops
+#--------------------
+def cleanRecogDataset(df):
+    '''
+        cleans the images2words dataset
+        args:
+            df          :   the data frame that contains images2words image_id,label
+        returns:
+            df_hand     :   the filtered version of the handwritten dataset
+            df_dict     :   the filtered version of the dictionary dataset  
+    '''
+    # dictionary words
+    df_dict=pd.read_csv(DICT_CSV)
+    dict_words=df_dict.word.tolist()
+    # get dfs
+    df_root,df_vd,df_cd,df_grapheme=get_data_frames(class_map_csv=CLASS_CSV,
+                                                    grapheme_labels_csv=LABEL_CSV)
+    # non-found
+    LOG_INFO("Cleaning non found graphemes")
+    df_hand=clean_non_found_graphemes(df=df,
+                                 df_grapheme=df_grapheme,
+                                 df_root=df_root,
+                                 df_vd=df_vd,
+                                 df_cd=df_cd,
+                                 data_column="label",
+                                 relevant_columns=["image_id","label"])
+    # red flags
+    LOG_INFO("Cleaning red flags")
+    df_hand=clean_red_flags(df=df_hand,
+                       dict_words=dict_words)
+    
+    # save
+    df_hand.to_csv(os.path.join(os.getcwd(),'resources',"hand_writen_dataset.csv"),index=False)
+    
+    # non-found-dictionary
+    LOG_INFO("Cleaning non found graphemes for dictionary")
+    df_dict=clean_non_found_graphemes(df=df_dict,
+                                    df_grapheme=df_grapheme,
+                                    df_root=df_root,
+                                    df_vd=df_vd,
+                                    df_cd=df_cd,
+                                    data_column="word",
+                                    relevant_columns=["word"])
+    # save
+    df_dict.to_csv(os.path.join(os.getcwd(),'resources',"dictionary_dataset.csv"),index=False)
+    return df_hand,df_dict
+    
+
 #--------------------------------StyleTransferDataset------------------------------------------------------------
 #--------------------
 # helper functions
@@ -287,4 +337,83 @@ def createStyleTransferDataset(dataset,
                                 img_height=img_height,
                                 data_dim=data_dim)
 
+#--------------------------------RecogTraining------------------------------------------------------------
+#--------------------
+# ops
+#--------------------
+def createRecogTrainingDataset( df_hand,
+                                df_dict,
+                                img_height,
+                                data_dim,
+                                raw_path,
+                                images2words_path,
+                                save_path,
+                                num_samples_dict=3,
+                                total_dict=20000):
+    '''
+        creates the images and targets for style transfer training
+        args:
+            df_hand             :    the filtered version of the handwritten dataset
+            df_dict             :    the filtered version of the dictionary dataset  
+            img_height          :    height for each grapheme
+            data_dim            :    dimension of word images 
+            images2words_path   :    location of images folder that contains images 2 words data in png
+            raw_path            :    directory that contains the raw grapheme images
+            save_path           :    location to save the data
+            num_samples_dict    :    the amount of synthetic data to generate per word (default:5)
+            total_dict          :    the total number of words to take from dict
+            
+            
+    '''
+    IMAGE_ID=[]
+    LABEL   =[]
+    GRAPHEME=[]
     
+    # label
+    label_df=pd.read_csv(LABEL_CSV)
+    # create structre
+    save_path=create_dir(save_path,'data')
+    hand_path =create_dir(save_path,'hand')
+    dict_path=create_dir(save_path,'dict')
+    # create dict samples
+    df_dict=df_dict.sample(frac=1)
+    df_dict=df_dict.head(total_dict)
+
+    count=0
+    LOG_INFO("Creating Handwritten Data")
+    for iid,grapheme_list,label in tqdm(zip(df_hand['image_id'],df_hand['graphemes'],df_hand['label']),total=len(df_hand)):
+        img=cv2.imread(os.path.join(images2words_path,iid),0)
+        img=cleanImage(img=img,
+                       img_height=img_height)
+
+        img=padImage(img=img,
+                     data_dim=data_dim)
+        
+        IMAGE_ID.append(f"hand_{count}.png")             
+        LABEL.append(label)
+        GRAPHEME.append(grapheme_list)
+
+        cv2.imwrite(os.path.join(hand_path,f"hand_{count}.png"),img)
+        count+=1
+    
+    LOG_INFO("Creating Dictionary Data")
+    for grapheme_list,label in tqdm(zip(df_dict['graphemes'],df_dict['word']),total=len(df_dict)):    
+        for _ in range(num_samples):
+            img=getRandomSyntheticData(grapheme_list=grapheme_list,
+                                        label_df=label_df,
+                                        png_dir=raw_path,
+                                        img_height=img_height,
+                                        data_dim=data_dim)
+            if img is not None:                            
+                IMAGE_ID.append(f"dict_{count}.png")             
+                LABEL.append(label)
+                GRAPHEME.append(grapheme_list)
+
+                cv2.imwrite(os.path.join(dict_path,f"dict_{count}.png"),img)
+                count+=1
+        
+    # save
+    df=pd.DataFrame({"image":IMAGE_ID,
+                     "label":LABEL,
+                     "grapheme":GRAPHEME})
+    df.to_csv(os.path.join(os.getcwd(),"resources","dataset.csv"))

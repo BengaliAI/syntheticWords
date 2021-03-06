@@ -132,6 +132,8 @@ def getRandomSyntheticData(grapheme_list,
         else:
             return None
 
+    if len(imgs)==0:
+        return None
     # corner case
     if len(imgs)==1:
         img=imgs[0]
