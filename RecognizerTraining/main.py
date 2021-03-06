@@ -55,7 +55,7 @@ def main(args):
                                raw_path=raw_path,
                                images2words_path=images2words_path,
                                save_path=save_path,
-                               num_samples_dict=int(args.num_samples),
+                               num_samples_dict=int(args.num_samples_dict),
                                total_dict=int(args.total_dict))
                                
     

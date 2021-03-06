@@ -398,7 +398,7 @@ def createRecogTrainingDataset( df_hand,
     
     LOG_INFO("Creating Dictionary Data")
     for grapheme_list,label in tqdm(zip(df_dict['graphemes'],df_dict['word']),total=len(df_dict)):    
-        for _ in range(num_samples):
+        for _ in range(num_samples_dict):
             img=getRandomSyntheticData(grapheme_list=grapheme_list,
                                         label_df=label_df,
                                         png_dir=raw_path,
