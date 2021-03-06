@@ -187,7 +187,7 @@ def cleanStyleTransferDataset(df):
             df   :   the data frame that contains images2words image_id,label
     '''
     # dictionary words
-    dict_words=pd.read_csv(DICT_CSV).word.tolist()
+    dict_words=pd.read_csv(DICT_CSV).word.unique().tolist()
     # get dfs
     df_root,df_vd,df_cd,df_grapheme=get_data_frames(class_map_csv=CLASS_CSV,
                                                     grapheme_labels_csv=LABEL_CSV)

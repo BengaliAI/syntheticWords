@@ -111,7 +111,8 @@ Gnome       : 3.28.2
     -h, --help  show this help message and exit
 
 ```
-
+* The h5Store dataset is available [here](https://www.kaggle.com/nazmuddhohaansary/banglasymbols)
+* A data access kernel can be found [here](https://www.kaggle.com/nazmuddhohaansary/notebook48a38bccfb)
 ## StyleTransferTest Execution
 * run **./main.py**
 ```python
