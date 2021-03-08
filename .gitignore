@@ -133,3 +133,4 @@ bengalai/*
 resources/words.csv
 debug.ipynb 
 RecognizerTraining/resources/*
+__extra__/*
