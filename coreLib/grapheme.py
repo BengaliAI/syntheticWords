@@ -155,6 +155,7 @@ def word2grapheme(word):
         creates grapheme list for a given word
     '''
     decomp=cleanWord(word)
+    print(decomp)
     decomp=get_root_from_decomp(decomp)
     graphemes=get_graphemes_from_decomp(decomp)
     return graphemes
