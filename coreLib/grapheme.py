@@ -77,6 +77,8 @@ def cleanWord(word):
         return:
             a list of decomposed chars
     '''
+    if word[0]=='়' or word[0]=='্':
+        word=word[1:]
     for num in nms:
         if num in word:
             word=word.replace(num,"")
@@ -87,47 +89,57 @@ def get_root_from_decomp(decomp):
     '''
         creates grapheme root based list 
     '''
+    # mod correction
+    for idx,d in enumerate(decomp):
+        if d==mds[0]:
+            decomp[idx-1]=decomp[idx-1]+mds[0]
+    while mds[0] in decomp:
+        decomp.remove(mds[0])
+            
     # map roots
     connector= '্'
-    c_idxs = [i for i, x in enumerate(decomp) if x == connector]
-    # component wise index map    
-    comps=[[cid-1,cid,cid+1] for cid in c_idxs ]
-    # merge multi root
-    r_decomp = []
-    while len(comps)>0:
-        first, *rest = comps
-        first = set(first)
+    if connector in decomp:
+        c_idxs = [i for i, x in enumerate(decomp) if x == connector]
+        # component wise index map    
+        comps=[[cid-1,cid,cid+1] for cid in c_idxs ]
+        # merge multi root
+        r_decomp = []
+        while len(comps)>0:
+            first, *rest = comps
+            first = set(first)
 
-        lf = -1
-        while len(first)>lf:
-            lf = len(first)
+            lf = -1
+            while len(first)>lf:
+                lf = len(first)
 
-            rest2 = []
-            for r in rest:
-                if len(first.intersection(set(r)))>0:
-                    first |= set(r)
-                else:
-                    rest2.append(r)     
-            rest = rest2
+                rest2 = []
+                for r in rest:
+                    if len(first.intersection(set(r)))>0:
+                        first |= set(r)
+                    else:
+                        rest2.append(r)     
+                rest = rest2
 
-        r_decomp.append(sorted(list(first)))
-        comps = rest
-    # add    
-    combs=[]
-    for ridx in r_decomp:
-        comb=''
-        for i in ridx:
-            comb+=decomp[i]
-            combs.append(comb)
-        for i in ridx:
-            decomp[i]=comb
-    # new root based decomp
-    new_decomp=[]
-    for i in range(len(decomp)-1):
-        if decomp[i]!=decomp[i+1]:
-            new_decomp.append(decomp[i])
-    new_decomp.append(decomp[-1])
-    return new_decomp
+            r_decomp.append(sorted(list(first)))
+            comps = rest
+        # add    
+        combs=[]
+        for ridx in r_decomp:
+            comb=''
+            for i in ridx:
+                comb+=decomp[i]
+                combs.append(comb)
+            for i in ridx:
+                decomp[i]=comb
+        # new root based decomp
+        new_decomp=[]
+        for i in range(len(decomp)-1):
+            if decomp[i]!=decomp[i+1]:
+                new_decomp.append(decomp[i])
+        new_decomp.append(decomp[-1])
+        return new_decomp
+    else:
+        return decomp
 
 def get_graphemes_from_decomp(decomp):
     '''

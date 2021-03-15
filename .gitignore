@@ -131,6 +131,7 @@ dmypy.json
 # locals
 bengalai/*
 resources/words.csv
+resources/train.csv
 debug.ipynb 
 RecognizerTraining/resources/*
 __extra__/*
