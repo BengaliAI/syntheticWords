@@ -1,3 +1,7 @@
+# related resources
+
+For a collection of related resources in Hand written OCR research [click here](https://docs.google.com/spreadsheets/d/1LcEsd3z6lv4MO-ynbAawEjJ27jvPUoFiU9adQkD9g1A/edit?usp=sharing) 
+
 # synthetic words
 
 
