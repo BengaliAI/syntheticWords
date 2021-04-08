@@ -1,16 +1,9 @@
-# related resources
-
-For a collection of related resources in Hand written OCR research [click here](https://docs.google.com/spreadsheets/d/1LcEsd3z6lv4MO-ynbAawEjJ27jvPUoFiU9adQkD9g1A/edit?usp=sharing) 
 
 # synthetic words
 
 
 ```python
-Version: 0.0.4     
-Authors: Md. Nazmuddoha Ansary,
-        Tahsin Reasat,
-        Imtiaz Prio,
-        Sushmit Asif  
+Version: 0.0.5     
 ```
 **LOCAL ENVIRONMENT**  
 ```python
@@ -107,3 +100,7 @@ Gnome       : 3.28.2
 # References
 
 * [word2grapheme](https://www.kaggle.com/reasat/extract-word-image-and-label) (@author: [Tahsin Reasat](https://www.kaggle.com/reasat))
+
+# Related resources
+
+For a collection of related resources in Hand written OCR research [click here](https://docs.google.com/spreadsheets/d/1LcEsd3z6lv4MO-ynbAawEjJ27jvPUoFiU9adQkD9g1A/edit?usp=sharing) 

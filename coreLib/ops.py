@@ -17,7 +17,7 @@ from collections import Counter
 from glob import glob
 from tqdm import tqdm
 from .utils import LOG_INFO,create_dir
-from .dfcore import clean_non_found_graphemes,get_data_frames
+from .dfcore import clean_non_found_graphemes
 from .imgcore import createWordImage,getRandomSyntheticData
 tqdm.pandas()
 #--------------------
@@ -36,11 +36,10 @@ SYMBOLS+=[str(i) for i in range(10)]
 #--------------------
 # RESOURCES
 #--------------------
-LABEL_CSV   =   os.path.join(os.getcwd(),'resources','label.csv')
 CLASS_CSV   =   os.path.join(os.getcwd(),'resources','classes.csv')
+LABEL_CSV   =   os.path.join(os.getcwd(),'resources','label.csv')
 FONT_PATH   =   os.path.join(os.getcwd(),'resources','font.ttf')
 DICT_CSV    =   os.path.join(os.getcwd(),'resources','words.csv')
-
 #--------------------------------images2words------------------------------------------------------------
 #--------------------
 # helper functions
@@ -101,6 +100,7 @@ def images2words(converted_path,save_path):
     img_labels=[]
     i=0
     save_path=create_dir(save_path,'images2words')
+    LOG_INFO(save_path)
     # get image paths
     img_paths=[img_path for img_path in glob(os.path.join(converted_path,"*.jpg"))]
     # iterate
@@ -169,16 +169,9 @@ def cleanRecogDataset(dataset):
         returns:
             the filtered version of the handwritten dataset  
     '''
-    # get dfs
-    df_root,df_vd,df_cd,df_grapheme=get_data_frames(class_map_csv=CLASS_CSV,
-                                                    grapheme_labels_csv=LABEL_CSV)
     # non-found
     LOG_INFO("Cleaning non found graphemes")
     dataset=clean_non_found_graphemes(  df=dataset,
-                                        df_grapheme=df_grapheme,
-                                        df_root=df_root,
-                                        df_vd=df_vd,
-                                        df_cd=df_cd,
                                         data_column="label",
                                         relevant_columns=["image_id","label"])
     # red flags
