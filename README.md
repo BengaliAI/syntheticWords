@@ -96,12 +96,11 @@ Gnome       : 3.28.2
     * **test** folder contains the testing images
 
 
-**Pretraining**:
-The idea is to pre-train a backbone that returns multihot encoded labels 
-* run **./tfrecs_pretrain.py**
+**store-TPU support**:
+* run **./tfrecs.py**
 
 ```python
-    usage: Tfrecords data for multihot encoding  [-h] data_path save_path
+    usage: Tfrecords  for backbone-attention-ctc  [-h] data_path save_path
 
     positional arguments:
     data_path   Path of the data folder that contains Test and Train

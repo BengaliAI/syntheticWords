@@ -701,8 +701,10 @@
         "য়ে": 696,
         "য়ো": 697
     },
+    "max_label_len": 10,
     "nb_channels": 3,
     "nb_classes": 698,
     "nb_eval_data": 17274,
-    "nb_train_data": 44550
+    "nb_train_data": 44550,
+    "pad_value": 698
 }

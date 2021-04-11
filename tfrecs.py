@@ -58,11 +58,11 @@ class Processor(object):
         self.__test_path    =   os.path.join(self.data_path,'test')
         
         # output paths
-        self.__tfrec_path   =   create_dir(self.save_path,'pretrain_tfrecords')
+        self.__tfrec_path   =   create_dir(self.save_path,'tfrecords')
         self.__tfrec_train  =   create_dir(self.__tfrec_path,'train')
         self.__tfrec_test   =   create_dir(self.__tfrec_path,'test')
         
-        self.__config_json  =   os.path.join(os.getcwd(),"resources",'pretrain_config.json')
+        self.__config_json  =   os.path.join(os.getcwd(),"resources",'config.json')
         # initialize dataframes
         LOG_INFO("create encoded labels")
         self.__createEncodedLabels()
@@ -101,12 +101,18 @@ class Processor(object):
         # encoded labels
         train_df["encoded"] =   train_df.grapheme.progress_apply(lambda x: get_encoded_label(x))
         test_df["encoded"]  =   test_df.grapheme.progress_apply(lambda x: get_encoded_label(x))
-
+        #length
+        train_df["label_length"]=train_df.grapheme.progress_apply(lambda x: len(x))
+        test_df["label_length"]=test_df.grapheme.progress_apply(lambda x: len(x))
+        max_label_len=max(train_df.label_length.max(),test_df.label_length.max())
         # set public attributes
-        self.vocab      =   vocab
-        self.train_df   =   train_df
-        self.test_df    =   test_df
-    
+        self.vocab              =   vocab
+        self.train_df           =   train_df
+        self.test_df            =   test_df
+        self.max_label_len      =   int(max_label_len)
+        self.pad_value          =   len(vocab)    
+
+
     def __toTfrecord(self):
         '''
         Creates tfrecords from Provided Image Paths
@@ -124,6 +130,8 @@ class Processor(object):
                     image_png_bytes=fid.read()
                 # label
                 label=row["encoded"]
+                for _ in range(self.max_label_len-len(label)):
+                    label.append(self.pad_value)
                 # feature desc
                 data ={ 'image':_bytes_feature(image_png_bytes),
                         'label':_int64_feature(label)
@@ -149,18 +157,20 @@ class Processor(object):
         '''
         # config.json
         ## format labels
-        lables={}
+        labels={}
         for idx,v in enumerate(self.vocab):
-            lables[v]=idx
+            labels[v]=idx
 
 
         _config={'img_height':IMG_HEIGHT,
                 'img_width':IMG_WIDTH,   
                 'nb_channels':NB_CHANNELS,
                 'nb_classes':len(self.vocab),
+                'pad_value':self.pad_value,
+                'max_label_len':self.max_label_len,
                 'nb_train_data':len(self.train_df),
                 'nb_eval_data':len(self.test_df),
-                'labels':lables
+                'labels':labels
                 }
         with open(self.__config_json, 'w') as fp:
             json.dump(_config, fp,sort_keys=True, indent=4,ensure_ascii=False)
@@ -199,7 +209,7 @@ if __name__=="__main__":
     '''
         parsing and execution
     '''
-    parser = argparse.ArgumentParser("Tfrecords data for multihot encoding ")
+    parser = argparse.ArgumentParser("Tfrecords data for backbone-attention-ctc ")
     parser.add_argument("data_path", help="Path of the data folder that contains Test and Train")
     parser.add_argument("save_path", help="Path to save the tfrecords")
     args = parser.parse_args()
