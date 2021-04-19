@@ -20,12 +20,7 @@ from glob import glob
 from tqdm import tqdm
 from coreLib.utils import LOG_INFO,create_dir
 tqdm.pandas()
-#---------------------------------------------------------------
-# fixed globals
-#---------------------------------------------------------------
-IMG_HEIGHT  =32
-IMG_WIDTH   =128
-NB_CHANNELS =3
+
 #---------------------------------------------------------------
 # data functions
 #---------------------------------------------------------------
@@ -212,6 +207,14 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser("Tfrecords data for backbone-attention-ctc ")
     parser.add_argument("data_path", help="Path of the data folder that contains Test and Train")
     parser.add_argument("save_path", help="Path to save the tfrecords")
+    parser.add_argument("--img_height",required=False,default=32,help ="height for each grapheme: default=32")
+    parser.add_argument("--img_width",required=False,default=128,help ="width dimension of word images: default=128")
     args = parser.parse_args()
+    # set globals
+    IMG_HEIGHT  =   int(args.img_height)
+    IMG_WIDTH   =   int(args.img_width)
+    NB_CHANNELS =   3
+    
     main(args)
+
     
