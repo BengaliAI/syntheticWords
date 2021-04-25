@@ -705,6 +705,6 @@
     "nb_channels": 3,
     "nb_classes": 698,
     "nb_eval_data": 17274,
-    "nb_train_data": 44550,
+    "nb_train_data": 222750,
     "pad_value": 698
 }

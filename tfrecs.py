@@ -27,8 +27,10 @@ tqdm.pandas()
 # feature fuctions
 def _bytes_feature(value):
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
-def _int64_feature(value):
+def _int64_list_feature(value):
       return tf.train.Feature(int64_list=tf.train.Int64List(value=value))
+def _int64_feature(value):
+      return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
 def _float_feature(value):
       return tf.train.Feature(float_list=tf.train.FloatList(value=[value]))
 #---------------------------------------------------------------
@@ -36,18 +38,21 @@ class Processor(object):
     def __init__(self,
                 data_path,
                 save_path,
-                data_size=10000):
+                inp_len,
+                data_size=20000):
         '''
             initializes the class
             args:
                 data_path   =   location of raw data folder which contains eval and train folder
                 save_path   =   location to save outputs (tfrecords,config.json)
                 data_size   =   the size of tfrecords
+                inp_len     =   CTC Decoder input time steps(if no step is ignored this is == img_width) 
         '''
         # public attributes
         self.data_path  =   data_path
         self.save_path  =   save_path
         self.data_size  =   data_size
+        self.inp_len    =   inp_len 
         # private attributes
         self.__train_path   =   os.path.join(self.data_path,'train')
         self.__test_path    =   os.path.join(self.data_path,'test')
@@ -114,22 +119,27 @@ class Processor(object):
         '''
         tfrecord_name=f'{self.__rnum}.tfrecord'
         tfrecord_path=os.path.join(self.__rec_path,tfrecord_name) 
-        LOG_INFO(tfrecord_path)
+        #LOG_INFO(tfrecord_path)
 
         with tf.io.TFRecordWriter(tfrecord_path) as writer:    
             
-            for _,row in tqdm(self.__df.iterrows()):
+            for _,row in self.__df.iterrows():
                 img_path=os.path.join(self.__mode_path,row["image"]) 
                 # img
                 with(open(img_path,'rb')) as fid:
                     image_png_bytes=fid.read()
                 # label
                 label=row["encoded"]
+                # label-length
+                label_length=int(row["label_length"])
+
                 for _ in range(self.max_label_len-len(label)):
                     label.append(self.pad_value)
                 # feature desc
                 data ={ 'image':_bytes_feature(image_png_bytes),
-                        'label':_int64_feature(label)
+                        'label':_int64_list_feature(label),
+                        'input_length':_int64_feature(self.inp_len),
+                        'label_length':_int64_feature(label_length)
                 }
                 
                 features=tf.train.Features(feature=data)
@@ -141,7 +151,7 @@ class Processor(object):
         '''
             tf record wrapper
         '''
-        for idx in range(0,len(self.df),self.data_size):
+        for idx in tqdm(range(0,len(self.df),self.data_size)):
             self.__df         =   self.df.iloc[idx:idx+self.data_size]  
             self.__rnum       =   idx//self.data_size
             self.__toTfrecord()
@@ -186,7 +196,6 @@ class Processor(object):
 
 
 #---------------------------------------------------------------
-
 def main(args):
     '''
         preprocesses data for training
@@ -197,7 +206,8 @@ def main(args):
     '''
     data_path   =   args.data_path
     save_path   =   args.save_path
-    processor_obj=Processor(data_path,save_path)
+    inp_len     =   int(args.input_length)
+    processor_obj=Processor(data_path,save_path,inp_len)
     processor_obj.process()
 
 if __name__=="__main__":
@@ -209,11 +219,14 @@ if __name__=="__main__":
     parser.add_argument("save_path", help="Path to save the tfrecords")
     parser.add_argument("--img_height",required=False,default=32,help ="height for each grapheme: default=32")
     parser.add_argument("--img_width",required=False,default=128,help ="width dimension of word images: default=128")
+    parser.add_argument("--input_length",required=False,default=32,help="CTC Decoder input time steps(if no step is ignored this is == img_width) :default=32")
+    parser.add_argument("--num_channels",required=False,default=3,help="number of channels in the images :default=3")
+    
     args = parser.parse_args()
     # set globals
     IMG_HEIGHT  =   int(args.img_height)
     IMG_WIDTH   =   int(args.img_width)
-    NB_CHANNELS =   3
+    NB_CHANNELS =   int(args.num_channels)
     
     main(args)
 
