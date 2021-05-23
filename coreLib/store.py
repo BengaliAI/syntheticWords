@@ -3,6 +3,7 @@
     @author:  MD. Nazmuddoha Ansary
 '''
 from __future__ import print_function
+from coreLib.utils import LOG_INFO
 #---------------------------------------------------------------
 # imports
 #---------------------------------------------------------------
@@ -26,7 +27,7 @@ def toTfrecord(df,rnum,rec_path):
     '''
     tfrecord_name=f'{rnum}.tfrecord'
     tfrecord_path=os.path.join(rec_path,tfrecord_name) 
-    
+    LOG_INFO(tfrecord_path)
     with tf.io.TFRecordWriter(tfrecord_path) as writer:    
         
         for idx in range(len(df)):

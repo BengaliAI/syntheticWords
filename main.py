@@ -37,11 +37,11 @@ def main(args):
     ds=createWords(ds,num_samples,dim=(img_width,img_height))
     # create tfrecords
     ## train
-    df2rec(ds.word.train.head(100),ds.tfrecords.train,tf_size)
+    df2rec(ds.word.train,ds.tfrecords.train,tf_size)
     ## test
-    df2rec(ds.word.test.head(100),ds.tfrecords.test,tf_size)
+    df2rec(ds.word.test,ds.tfrecords.test,tf_size)
     ## synthetic
-    df2rec(ds.synthetic.data.head(100),ds.tfrecords.synthetic,tf_size)
+    df2rec(ds.synthetic.data,ds.tfrecords.synthetic,tf_size)
     
     # config 
     config={'img_height':img_height,
@@ -55,7 +55,8 @@ def main(args):
             'nb_test' :len(ds.word.test),
             'nb_synth':len(ds.synthetic.data),
             'cvocab':ds.vocab.charecter,
-            'gvocab':ds.vocab.grapheme
+            'gvocab':ds.vocab.grapheme,
+            'unique_words':len(ds.word.data)
             }
     with open(ds.config_json, 'w') as fp:
         json.dump(config, fp,sort_keys=True, indent=4,ensure_ascii=False)
