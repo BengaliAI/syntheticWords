@@ -9,51 +9,56 @@
 import argparse
 import os 
 import json
-import pandas as pd
-from tqdm import tqdm
-import sys 
 
-from coreLib.utils import create_dir,LOG_INFO
-from coreLib.ops import images2words,cleanRecogDataset,createRecogDataset
-
+from coreLib.utils import *
+from coreLib.dataset import DataSet
+from coreLib.pages import pages2words
+from coreLib.synthetic import createWords
+from coreLib.store import df2rec
 #--------------------
 # main
 #--------------------
 def main(args):
     '''
-        * Creates a images2words data
-        * cleans up the data
+        * Creates a pages2words data
         * creates a dataset for Recognizer Training
     '''  
     data_path   =   args.data_path
     save_path   =   args.save_path
     img_height  =   int(args.img_height)
     img_width   =   int(args.img_width)
-    # ops
-    converted_path = os.path.join(data_path,'converted')
-    raw_path       = os.path.join(data_path,'RAW')
-    # error check
-    LOG_INFO("checking args error")
-    if not os.path.exists(raw_path):
-        raise ValueError("Wrong Data directory given. No RAW png folder in data path")
-    if not os.path.exists(converted_path):
-        raise ValueError("Wrong Data directory given. No converted folder in data path")
+    num_samples =   int(args.num_samples)
+    tf_size     =   20000
+    # dataset object
+    ds=DataSet(data_dir=data_path,save_path=save_path)
+    # create pages 2 words
+    ds=pages2words(ds,dim=(img_width,img_height))
+    # create synthetic data
+    ds=createWords(ds,num_samples,dim=(img_width,img_height))
+    # create tfrecords
+    ## train
+    df2rec(ds.word.train.head(100),ds.tfrecords.train,tf_size)
+    ## test
+    df2rec(ds.word.test.head(100),ds.tfrecords.test,tf_size)
+    ## synthetic
+    df2rec(ds.synthetic.data.head(100),ds.tfrecords.synthetic,tf_size)
     
-    LOG_INFO("Creating images 2 words")
-    dataset,images2words_path=images2words(converted_path=converted_path,
-                                           save_path=save_path)
-    LOG_INFO("cleaning lexicon-based dataset")
-    dataset=cleanRecogDataset(dataset=dataset)
-    
-    LOG_INFO("Creating Recognizer Training Dataset")
-    createRecogDataset( dataset=dataset,
-                        img_height=img_height,
-                        img_width=img_width,
-                        raw_path=raw_path,
-                        images2words_path=images2words_path,
-                        save_path=save_path,
-                        num_samples=int(args.num_samples))
-                        
+    # config 
+    config={'img_height':img_height,
+            'img_width':img_width,   
+            'nb_channels':3,
+            'nb_classes_char':len(ds.vocab.charecter),
+            'nb_classes_grapheme':len(ds.vocab.grapheme),
+            'max_clabel_len':len(ds.word.data.iloc[0,1]),
+            'max_glabel_len':len(ds.word.data.iloc[0,2]),
+            'nb_train':len(ds.word.train),
+            'nb_test' :len(ds.word.test),
+            'nb_synth':len(ds.synthetic.data),
+            'cvocab':ds.vocab.charecter,
+            'gvocab':ds.vocab.grapheme
+            }
+    with open(ds.config_json, 'w') as fp:
+        json.dump(config, fp,sort_keys=True, indent=4,ensure_ascii=False)
     
                
     
@@ -68,7 +73,7 @@ if __name__=="__main__":
     parser.add_argument("save_path", help="Path of the directory to save the dataset")
     parser.add_argument("--img_height",required=False,default=32,help ="height for each grapheme: default=32")
     parser.add_argument("--img_width",required=False,default=128,help ="width dimension of word images: default=128")
-    parser.add_argument("--num_samples",required=False,default=10,help ="number of samples to create per word: default=10")
+    parser.add_argument("--num_samples",required=False,default=200,help ="number of samples to create per word: default=200")
     args = parser.parse_args()
     main(args)
     
