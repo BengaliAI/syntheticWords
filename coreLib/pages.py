@@ -78,13 +78,15 @@ def extract_word_images_and_labels(img_path):
 #--------------------
 def pages2words(ds,
                 dim=(128,32),
-                split_perc=20):
+                split_perc=20,
+                label_sep=False):
     '''
         creates the images based on labels
         args:
             ds            :  dataset object
             split_perc    :  test split perc
             dim           :  (img_width,img_height) tuple to resize to 
+            label_sep     :  name separated with label
     '''
     img_idens=[]
     img_labels=[]
@@ -104,7 +106,10 @@ def pages2words(ds,
                     # resize to char dim
                     img=cv2.resize(img,dim)
                     # save path for the word
-                    img_save_path=os.path.join(save_path,f"{i}.png")
+                    if label_sep:
+                        img_save_path=os.path.join(save_path,f"{label}_{i}.png")
+                    else:
+                        img_save_path=os.path.join(save_path,f"{i}.png")
                     # save
                     cv2.imwrite(img_save_path,img)
                     # append

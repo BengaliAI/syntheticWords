@@ -30,7 +30,7 @@ def toTfrecord(df,rnum,rec_path):
     LOG_INFO(tfrecord_path)
     with tf.io.TFRecordWriter(tfrecord_path) as writer:    
         
-        for idx in range(len(df)):
+        for idx in tqdm(range(len(df))):
             img_path=df.iloc[idx,0]
             clabel  =df.iloc[idx,1]
             glabel  =df.iloc[idx,2]
@@ -53,7 +53,7 @@ def df2rec(df,save_path,data_size):
     '''
         tf record wrapper
     '''
-    for idx in tqdm(range(0,len(df),data_size)):
+    for idx in range(0,len(df),data_size):
         _df        =   df.iloc[idx:idx+data_size]  
         rnum       =   idx//data_size
         toTfrecord(_df,rnum,save_path)
