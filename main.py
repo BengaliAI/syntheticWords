@@ -86,6 +86,8 @@ def main(args):
     
         df=pd.concat([df1,df2],ignore_index=True)
         df=df.drop_duplicates(subset=['word'])
+        # error for none type
+        df.dropna(inplace=True)
         data=df[["graphemes","clabel","glabel","word"]]
     
     ds.word=word
@@ -98,7 +100,7 @@ def main(args):
     # construct files
     df_test["img_path"]=df_test.filename.progress_apply(lambda x:os.path.join(ds.test_path,x))
     df_train["img_path"]=df_train.filename.progress_apply(lambda x:os.path.join(ds.train_path,x))
-    df_synth["img_path"]=df_synth.filename.progress_apply(lambda x:os.path.join(ds.save_path,x))
+    df_synth["img_path"]=df_synth.filename.progress_apply(lambda x:os.path.join(ds.synthetic_path,x))
 
     # format
     columns     =   ["img_path","clabel","glabel"]
