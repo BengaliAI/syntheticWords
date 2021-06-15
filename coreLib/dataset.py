@@ -21,11 +21,24 @@ class DataSet(object):
             save_path: the path to save all outputs
         '''
         self.data_dir=data_dir
-        # save paths
+        
+        #-------------------
+        # save_paths
+        #------------------        
         self.save_path      =   save_path
-        self.word_path      =   create_dir(self.save_path,"words")
-        self.synthetic_path =   create_dir(self.save_path,"synthetic")
+        self.images_path    =   create_dir(self.save_path,"images")
+        self.test_path      =   create_dir(self.images_path,"test")     # pages data
+        self.train_path     =   create_dir(self.images_path,"train")    # boise state data
+        self.synthetic_path =   create_dir(self.images_path,"synthetic")# synthetic data 
+
+        # csv-s
+        self.train_csv      =   os.path.join(self.save_path,"train.csv")
+        self.test_csv       =   os.path.join(self.save_path,"test.csv")
+        self.synth_csv      =   os.path.join(self.save_path,"synthetic.csv")
+
         self.config_json    =   os.path.join(self.save_path,"config.json")
+        
+        
         class tfrecords:
             dir         =   create_dir(self.save_path,"tfrecords")
             synthetic   =   create_dir(dir,"synthetic")
@@ -34,39 +47,53 @@ class DataSet(object):
             test        =   create_dir(written,"test")        
 
 
+        #-------------------
+        # resource
+        #------------------
         class graphemes:
             dir   =   os.path.join(data_dir,"graphemes")
             csv   =   os.path.join(data_dir,"graphemes.csv")
         
-        self.pages     =   os.path.join(data_dir,"pages")
-    
+        self.pages       =   os.path.join(data_dir,"pages")
+        
+        class boise_state:
+            dir =   os.path.join(data_dir,"boise_state","words")
+            csv =   os.path.join(data_dir,"boise_state","labels.csv")
         
 
         # assign
         self.graphemes  = graphemes
         self.tfrecords  = tfrecords
+        self.boise_state= boise_state
+
         # error check
         self.__checkExistance()
 
         # get df
-        self.graphemes.df=self.__getDataFrame(self.graphemes.csv)
+        self.graphemes.df  =self.__getDataFrame(self.graphemes.csv)
+        self.boise_state.df=self.__getDataFrame(self.boise_state.csv,label_type="list")
         
         # data validity
         self.__checkDataValidity(self.graphemes,"graphemes")
         self.__checkDataValidity(self.pages,"pages",check_pages=True)
+        self.__checkDataValidity(self.boise_state,"graphemes")
         # graphemes
         self.known_graphemes=list(self.graphemes.df.label.unique())
 
-    def __getDataFrame(self,csv):
+    def __getDataFrame(self,csv,label_type="single"):
         '''
             creates the dataframe from a given csv file
             args:
                 csv       =   csv file path
+                label_type=   either single label or list of label is given. For non-single anything goes
         '''
         try:
             df=pd.read_csv(csv)
             assert "filename" in df.columns,f"filename column not found:{csv}"
-            assert "label" in df.columns,f"label column not found:{csv}"
+            if label_type=="single":
+                assert "label" in df.columns,f"label column not found:{csv}"
+            else:
+                assert "labels" in df.columns,f"label column not found:{csv}"
             return df
         except Exception as e:
             LOG_INFO(f"Error in processing:{csv}",mcolor="yellow")
@@ -100,6 +127,8 @@ class DataSet(object):
         assert os.path.exists(self.graphemes.dir),"Bangla graphemes dir not found"
         assert os.path.exists(self.graphemes.csv),"Bangla graphemes csv not found"
         assert os.path.exists(self.pages),"Pages dir not found"
+        assert os.path.exists(self.boise_state.dir),"Boise State Image Dir not found"
+        assert os.path.exists(self.boise_state.csv),"Boise State csv not found"
         
         LOG_INFO("All paths found",mcolor="green")
         

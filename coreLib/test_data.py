@@ -12,10 +12,10 @@ import numpy as np
 import pandas as pd 
 import string
 import random
-
+from skimage.util import random_noise
 from glob import glob
 from tqdm.auto import tqdm
-from .utils import *
+from .utils import stripPads,correctPadding,LOG_INFO,GraphemeParser
 tqdm.pandas()
 #--------------------
 # GLOBALS
@@ -76,24 +76,27 @@ def extract_word_images_and_labels(img_path):
 #--------------------
 # ops
 #--------------------
-def pages2words(ds,
-                dim=(128,32),
-                split_perc=20,
-                label_sep=False):
+def pages2words(ds,dim=(32,256)):
     '''
         creates the images based on labels
         args:
             ds            :  dataset object
-            split_perc    :  test split perc
-            dim           :  (img_width,img_height) tuple to resize to 
-            label_sep     :  name separated with label
+            dim           :  (img_height,img_width) tuple to resize to 
     '''
+    # properly set height and width
+    img_height,img_width=dim
+
     img_idens=[]
     img_labels=[]
-    src_imgs=[]
+    
+    
     i=0
-    save_path=ds.word_path
+    
+    
+    save_path=ds.test_path
     LOG_INFO(save_path)
+    
+    
     # get image paths
     img_paths=[img_path for img_path in glob(os.path.join(ds.pages,"*.jpg"))]
     # iterate
@@ -103,75 +106,47 @@ def pages2words(ds,
         if len(imgs)>0:
             for img,label in zip(imgs,labels):
                 try:
-                    # resize to char dim
-                    img=cv2.resize(img,dim)
-                    # save path for the word
-                    if label_sep:
-                        img_save_path=os.path.join(save_path,f"{label}_{i}.png")
-                    else:
-                        img_save_path=os.path.join(save_path,f"{i}.png")
+                    
+                    # thresh
+                    blur = cv2.GaussianBlur(img,(5,5),0)
+                    _,img = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+                    img=stripPads(img,255)
+                    # resize (heigh based)
+                    h,w=img.shape 
+                    width= int(img_height* w/h) 
+                    img=cv2.resize(img,(width,img_height),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
+                    # add noise
+                    noise_img = random_noise(img, mode='s&p',amount=random.choice([0.2,0.15,0.1,0.05]))
+                    img = np.array(255*noise_img, dtype = 'uint8')
+                    # save
+                    img=correctPadding(img,dim)     
+                    img_save_path=os.path.join(save_path,f"{i}.png")
                     # save
                     cv2.imwrite(img_save_path,img)
                     # append
                     img_idens.append(f"{i}.png")
                     img_labels.append(label)
-                    src_imgs.append(os.path.basename(img_path))
-
                     i=i+1
                     
                 except Exception as e: 
                     LOG_INFO(f"error in creating image:{img_path} label:{label},error:{e}",mcolor='red')
-    # save to csv
-    df=pd.DataFrame({"image_id":img_idens,"label":img_labels,"src":src_imgs})
+    
+    
+    
+    # test dataframe
+    df              =   pd.DataFrame({"filename":img_idens,"word":img_labels})
     # graphemes
-    df["graphemes"]=df.label.progress_apply(lambda x:GP.word2grapheme(x))
+    df["graphemes"] =   df.word.progress_apply(lambda x:GP.word2grapheme(x))
     # cleanup
-    df.graphemes=df.graphemes.progress_apply(lambda x: x if set(x)<=set(ds.known_graphemes) else None)
-    df.dropna(inplace=True)
+    df.graphemes    =   df.graphemes.progress_apply(lambda x: x if set(x)<=set(ds.known_graphemes) else None)
     # unicodes
-    df["unicodes"]=df.label.progress_apply(lambda x:[i for i in x])
+    df["unicodes"]  =   df.word.progress_apply(lambda x:[i for i in x])
     
-    # char vocab
-    symbol_lists=df.unicodes.tolist()
-    cvocab  = get_sorted_vocab(symbol_lists)
-    max_len= max([len(l) for l in symbol_lists])
-    df["clabel"]= df.unicodes.progress_apply(lambda x: get_encoded_label(x,cvocab))
-    df.clabel   = df.clabel.progress_apply(lambda x: pad_encoded_label(x,max_len,len(cvocab)))
+    df.dropna(inplace=True)
+    
+    
 
-    # grapheme vocab
-    symbol_lists=df.graphemes.tolist()
-    gvocab  = get_sorted_vocab(symbol_lists)
-    max_len= max([len(l) for l in symbol_lists])
-    df["glabel"]= df.graphemes.progress_apply(lambda x: get_encoded_label(x,gvocab))
-    df.glabel   = df.glabel.progress_apply(lambda x: pad_encoded_label(x,max_len,len(gvocab)))    
-    
-    # test train split
-    srcs=list(df.src.unique())
-    random.shuffle(srcs)
-    test_len=int(len(srcs)*split_perc/100)
-    test_srcs=srcs[:test_len]
-    df["mode"]=df.src.progress_apply(lambda x: "test" if x in test_srcs else "train")
-    
-    # img_path
-    df["img_path"]=df.image_id.progress_apply(lambda x: os.path.join(save_path,x))
+    df=df[["filename","word","graphemes","unicodes"]]
+    df.to_csv(ds.test_csv,index=False)
 
     
-    class word:
-        # pure word data
-        data=df.drop_duplicates(subset=['label'])
-        data=data[["graphemes","clabel","glabel"]]
-        
-        # split of test and train
-        train=df.loc[df["mode"]=="train"]
-        train=train[["img_path","clabel","glabel"]]
-        test=df.loc[df["mode"]=="test"]
-        test=test[["img_path","clabel","glabel"]]
-    
-    class vocab:
-        charecter=cvocab
-        grapheme =gvocab
-
-    ds.word=word 
-    ds.vocab=vocab 
-    
-    return ds

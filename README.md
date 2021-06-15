@@ -2,7 +2,7 @@
 # synthetic words
 
 ```python
-Version: 0.0.7     
+Version: 0.0.8     
 ```
 ### **Related resources**:
 
@@ -27,15 +27,19 @@ Gnome       : 3.28.2
 * ```pip3 install -r requirements.txt``` 
 > Its better to use a virtual environment 
 
-**caution**: Do not change anything under **resources**. 
+
 
 
 # Synthetic words
 ## Dataset
 * The **pages** dataset is taken from [here](https://www.kaggle.com/reasat/banglawriting).
 * The **graphemes** dataset is taken from [here](https://www.kaggle.com/pestipeti/bengali-quick-eda/#data). 
-* The final **input data** folder can be found [here](https://www.kaggle.com/nazmuddhohaansary/recognizertraining)
+* The **boise_state** dataset is taken from [here](https://www.kaggle.com/nazmuddhohaansary/boisebangladata)
+* The final processed **input data** folder can be found [here](https://www.kaggle.com/nazmuddhohaansary/recognizertraining)
 
+**Notes**:
+* **Synthetic** and **Boise_state** dataset is used for training 
+* **pages**/**bangla_writing** dataset is  used for testing
 
 
 ## RecognizerTraining
