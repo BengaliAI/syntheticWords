@@ -14,7 +14,7 @@ import string
 import random
 from skimage.util import random_noise
 from glob import glob
-from tqdm.auto import tqdm
+from tqdm import tqdm
 from .utils import stripPads,correctPadding,LOG_INFO,GraphemeParser
 tqdm.pandas()
 #--------------------
@@ -76,9 +76,9 @@ def extract_word_images_and_labels(img_path):
 #--------------------
 # ops
 #--------------------
-def pages2words(ds,dim=(32,256)):
+def processTestData(ds,dim=(32,256)):
     '''
-        creates the images based on labels
+        creates the testing data from **Bangla Writing** dataset
         args:
             ds            :  dataset object
             dim           :  (img_height,img_width) tuple to resize to 

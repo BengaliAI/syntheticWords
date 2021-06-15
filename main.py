@@ -12,17 +12,15 @@ import json
 
 from coreLib.utils import *
 from coreLib.dataset import DataSet
-from coreLib.test_data import pages2words
+from coreLib.test_data import processTestData
+from coreLib.train_data import processTrainData
 from coreLib.synthetic import createWords
 from coreLib.store import df2rec
 #--------------------
 # main
 #--------------------
 def main(args):
-    '''
-        * Creates a pages2words data
-        * creates a dataset for Recognizer Training
-    '''  
+
     data_path   =   args.data_path
     save_path   =   args.save_path
     img_height  =   int(args.img_height)
@@ -31,8 +29,19 @@ def main(args):
     tf_size     =   20000
     # dataset object
     ds=DataSet(data_dir=data_path,save_path=save_path)
-    # create pages 2 words
-    ds=pages2words(ds,dim=(img_height,img_width))
+    
+    #-----------------------------
+    # test data
+    #-----------------------------
+    #processTestData(ds,dim=(img_height,img_width))
+    #-----------------------------
+    # train data
+    #-----------------------------
+    processTrainData(ds,dim=(img_height,img_width))
+
+
+
+
 
     # create synthetic data
     #ds=createWords(ds,num_samples,dim=(img_width,img_height))

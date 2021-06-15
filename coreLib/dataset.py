@@ -7,9 +7,11 @@
 #--------------------
 import os
 import pandas as pd 
+
+from ast import literal_eval
 from glob import glob
-from tqdm.auto import tqdm
-from .utils import *
+from tqdm import tqdm
+from .utils import create_dir,LOG_INFO
 tqdm.pandas()
 #--------------------
 # class info
@@ -60,11 +62,36 @@ class DataSet(object):
             dir =   os.path.join(data_dir,"boise_state","words")
             csv =   os.path.join(data_dir,"boise_state","labels.csv")
         
+        class bangla:
+            vowels                 =   ['অ', 'আ', 'ই', 'ঈ', 'উ', 'ঊ', 'ঋ', 'এ', 'ঐ', 'ও', 'ঔ']
+            consonants             =   ['ক', 'খ', 'গ', 'ঘ', 'ঙ', 
+                                        'চ', 'ছ','জ', 'ঝ', 'ঞ', 
+                                        'ট', 'ঠ', 'ড', 'ঢ', 'ণ', 
+                                        'ত', 'থ', 'দ', 'ধ', 'ন', 
+                                        'প', 'ফ', 'ব', 'ভ', 'ম', 
+                                        'য', 'র', 'ল', 'শ', 'ষ', 
+                                        'স', 'হ','ড়', 'ঢ়', 'য়']
+            modifiers              =   ['ঁ', 'ং', 'ঃ','ৎ']
+            # diacritics
+            vowel_diacritics       =   ['া', 'ি', 'ী', 'ু', 'ূ', 'ৃ', 'ে', 'ৈ', 'ো', 'ৌ']
+            consonant_diacritics   =   ['ঁ', 'র্', 'র্য', '্য', '্র', '্র্য', 'র্্র']
+            # special charecters
+            nukta                  =   '়'
+            hosonto                =   '্'
+            special_charecters     =   [ nukta, hosonto,'\u200d']
+
+            # all valid unicode charecters
+            valid_unicodes         =    vowels+ consonants+ modifiers+ vowel_diacritics+ special_charecters
+
+
+
+
 
         # assign
         self.graphemes  = graphemes
         self.tfrecords  = tfrecords
         self.boise_state= boise_state
+        self.bangla     = bangla
 
         # error check
         self.__checkExistance()
@@ -94,6 +121,7 @@ class DataSet(object):
                 assert "label" in df.columns,f"label column not found:{csv}"
             else:
                 assert "labels" in df.columns,f"label column not found:{csv}"
+                df.labels=df.labels.progress_apply(lambda x: literal_eval(x))
             return df
         except Exception as e:
             LOG_INFO(f"Error in processing:{csv}",mcolor="yellow")
