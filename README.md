@@ -63,7 +63,7 @@ Gnome       : 3.28.2
     --img_height IMG_HEIGHT
                             height for each grapheme: default=32
     --img_width IMG_WIDTH
-                            width dimension of word images: default=128
+                            width dimension of word images: default=256
     --num_samples NUM_SAMPLES
                             number of samples to create per word: default=10
 
@@ -72,8 +72,7 @@ Gnome       : 3.28.2
 
 * creates the following in given **save_path**:
     * a **config.json**    : holding all the necessary config information 
-    * **words** folder     : containing  all the words from page data
-    * **synthetic** folder : containing  all the synthetic words 
+    * **image** folder     : containing  all the images for test train and synthetic 
     * **tfrecord**  folder : containing  all the tfrecords for :
         - written
             - train

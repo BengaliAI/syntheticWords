@@ -90,7 +90,7 @@ def main(args):
     # construct files
     df_test["img_path"]=df_test.filename.progress_apply(lambda x:os.path.join(ds.test_path,x))
     df_train["img_path"]=df_train.filename.progress_apply(lambda x:os.path.join(ds.train_path,x))
-    #df_synth["img_path"]=df_synth.filename.progress_apply(lambda x:os.path.join(ds.save_path,x))
+    df_synth["img_path"]=df_synth.filename.progress_apply(lambda x:os.path.join(ds.save_path,x))
 
     # format
     columns     =   ["img_path","clabel","glabel"]
@@ -137,7 +137,7 @@ if __name__=="__main__":
     parser.add_argument("save_path", help="Path of the directory to save the dataset")
     parser.add_argument("--img_height",required=False,default=32,help ="height for each grapheme: default=32")
     parser.add_argument("--img_width",required=False,default=256,help ="width dimension of word images: default=256")
-    parser.add_argument("--num_samples",required=False,default=200,help ="number of samples to create per word: default=200")
+    parser.add_argument("--num_samples",required=False,default=100,help ="number of samples to create per word: default=200")
     args = parser.parse_args()
     main(args)
     
