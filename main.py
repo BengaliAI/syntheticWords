@@ -76,8 +76,15 @@ def main(args):
     df_train.to_csv(ds.train_csv,index=False)
 
     class word:
-        # synthetic words dataframe
-        df=df_test.drop_duplicates(subset=['word'])
+
+        df1=df_test.copy()
+        df1=df1.drop_duplicates(subset=['word'])
+        
+        df2=df_train.copy()
+        df2=df2.drop_duplicates(subset=['word'])
+        df2.graphemes    =   df2.graphemes.progress_apply(lambda x: x if set(x)<=set(ds.known_graphemes) else None)
+    
+        df=pd.concat([df1,df2],ignore_index=True)
         data=df[["graphemes","clabel","glabel","word"]]
     
     ds.word=word
@@ -119,7 +126,8 @@ def main(args):
             'nb_test' :len(df_test),
             'nb_synth':len(df_synth),
             'cvocab':cvocab,
-            'gvocab':gvocab
+            'gvocab':gvocab,
+            'unique_words':len(ds.word.data)
             }
     with open(ds.config_json, 'w') as fp:
         json.dump(config, fp,sort_keys=True, indent=4,ensure_ascii=False)
