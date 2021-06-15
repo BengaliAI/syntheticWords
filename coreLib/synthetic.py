@@ -10,64 +10,30 @@ import cv2
 import numpy as np
 import random
 import pandas as pd 
-from tqdm.auto import tqdm
-from .utils import *
-#--------------------
-# helpers
-#--------------------
-def padImage(img,pad_loc,pad_dim):
-    '''
-        pads an image with white value
-        args:
-            img     :       the image to pad
-            pad_loc :       (lr/tb) lr: left-right pad , tb=top_bottom pad
-            pad_dim :       the dimension to pad upto 
-    '''
-    
-    if pad_loc=="lr":
-        # shape
-        h,w=img.shape
-        # pad widths
-        left_pad_width =(pad_dim-w)//2
-        # print(left_pad_width)
-        right_pad_width=pad_dim-w-left_pad_width
-        # pads
-        left_pad =np.ones((h,left_pad_width))*255
-        right_pad=np.ones((h,right_pad_width))*255
-        # pad
-        img =np.concatenate([left_pad,img,right_pad],axis=1)
-    else:
-        # shape
-        h,w=img.shape
-        # pad heights
-        top_pad_height =(pad_dim-h)//2
-        bot_pad_height=pad_dim-h-top_pad_height
-        # pads
-        top_pad =np.ones((top_pad_height,w))*255
-        bot_pad=np.ones((bot_pad_height,w))*255
-        # pad
-        img =np.concatenate([top_pad,img,bot_pad],axis=0)
-    return img.astype("uint8")    
-
+from tqdm import tqdm
+from .utils import correctPadding
+from skimage.util import random_noise
+tqdm.pandas()
 #--------------------
 # ops
 #--------------------
-def createWords(ds,num_samples,dim=(128,32)):
+def createWords(ds,num_samples,dim=(32,256)):
     '''
         creates handwriten word image
         args:
             ds          :       the dataset object
             num_samples :       number of samples per word
-            dim         :       (img_width,img_height) tuple to resize to 
+            dim         :       (img_height,img_width) tuple to resize to 
 
     '''
+    (img_height,img_width)=dim 
+
     synth_path=ds.synthetic_path
     
     mods=['ঁ', 'ং', 'ঃ']
     # initialize image count
     img_count=0
-    # extract dimensions
-    img_width,img_height=dim
+    
     # dataframe
     df=ds.word.data
 
@@ -75,13 +41,16 @@ def createWords(ds,num_samples,dim=(128,32)):
     img_paths=[]
     clabels=[]
     glabels=[]
+    words=[]
+    img_labels=[]
 
     for idx in tqdm(range(len(df))):
         # extract values
         graphemes=df.iloc[idx,0]
         clabel   =df.iloc[idx,1]
         glabel   =df.iloc[idx,2]
-        
+        word     =df.iloc[idx,3]
+
         # reconfigure comps
         while graphemes[0] in mods:
             graphemes=graphemes[1:]
@@ -99,41 +68,47 @@ def createWords(ds,num_samples,dim=(128,32)):
                 img_path=os.path.join(ds.graphemes.dir,f"{c_df.iloc[idx,0]}.bmp") 
                 # read image
                 img=cv2.imread(img_path,0)
+                img[img>0]=255
                 # resize
                 h,w=img.shape 
                 width= int(img_height* w/h) 
                 img=cv2.resize(img,(width,img_height),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
                 imgs.append(img)
+            
+            
             img=np.concatenate(imgs,axis=1)
-            # check for pad
-            h,w=img.shape
-            if w > img_width:
-                # for larger width
-                h_new= int(img_width* h/w) 
-                img=cv2.resize(img,(img_width,h_new),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
-                # pad
-                img=padImage(img,pad_loc="tb",pad_dim=img_height) 
-            elif w < img_width:
-                # pad
-                img=padImage(img,pad_loc="lr",pad_dim=img_width)
-
+            # resize (heigh based)
+            h,w=img.shape 
+            width= int(img_height* w/h) 
+            img=cv2.resize(img,(width,img_height),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
+            # add noise
+            noise_img = random_noise(img, mode='s&p',amount=random.choice([0.2,0.15,0.1,0.05]))
+            img = np.array(255*noise_img, dtype = 'uint8')
+            # save
+            img=correctPadding(img,dim)     
             # save the image
             img_path=os.path.join(synth_path,f"{img_count}.png")
             cv2.imwrite(img_path,img)
-            img_count+=1
+            
+            
+            
+            
             # data variables
-            img_paths.append(img_path)
+            img_paths.append(f"{img_count}.png")
             glabels.append(glabel)
             clabels.append(clabel)
+            words.append(word)
+            img_labels.append(graphemes)
+
+            img_count+=1
     
     # dataframe
-    df=pd.DataFrame({"img_path":img_paths,"clabel":clabels,"glabel":glabels})
-    df=df.sample(frac=1)
+    df=pd.DataFrame({"filename":img_paths,"word":words,"graphemes":img_labels,"clabel":clabels,"glabel":glabels})
+    # unicodes
+    df["unicodes"]  =   df.word.progress_apply(lambda x:[i for i in x])
+    df=df[["filename","word","graphemes","unicodes","clabel","glabel"]]
+    df.to_csv(ds.synth_csv,index=False)
 
-    class synthetic:
-        data=df
-
-    ds.synthetic=synthetic
-    return ds  
+    return df  
 
 
