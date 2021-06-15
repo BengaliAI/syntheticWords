@@ -85,6 +85,7 @@ def main(args):
         df2.graphemes    =   df2.graphemes.progress_apply(lambda x: x if set(x)<=set(ds.known_graphemes) else None)
     
         df=pd.concat([df1,df2],ignore_index=True)
+        df=df.drop_duplicates(subset=['word'])
         data=df[["graphemes","clabel","glabel","word"]]
     
     ds.word=word
