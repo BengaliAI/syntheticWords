@@ -76,7 +76,7 @@ def extract_word_images_and_labels(img_path):
 #--------------------
 # ops
 #--------------------
-def processTestData(ds,dim=(32,256)):
+def processData_BANGLA_WRITING(ds,dim=(32,256)):
     '''
         creates the testing data from **Bangla Writing** dataset
         args:
@@ -93,7 +93,7 @@ def processTestData(ds,dim=(32,256)):
     i=0
     
     
-    save_path=ds.test_path
+    save_path=ds.bangla_writing_path
     LOG_INFO(save_path)
     
     
@@ -137,8 +137,6 @@ def processTestData(ds,dim=(32,256)):
     df              =   pd.DataFrame({"filename":img_idens,"word":img_labels})
     # graphemes
     df["graphemes"] =   df.word.progress_apply(lambda x:GP.word2grapheme(x))
-    # cleanup
-    df.graphemes    =   df.graphemes.progress_apply(lambda x: x if set(x)<=set(ds.known_graphemes) else None)
     # unicodes
     df["unicodes"]  =   df.word.progress_apply(lambda x:[i for i in x])
     
@@ -147,6 +145,4 @@ def processTestData(ds,dim=(32,256)):
     
 
     df=df[["filename","word","graphemes","unicodes"]]
-    df.to_csv(ds.test_csv,index=False)
-
-    
+    df.to_csv(ds.bangla_writing_csv,index=False)    

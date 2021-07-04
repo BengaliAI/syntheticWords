@@ -33,7 +33,7 @@ def correctLabels(unicodes,labels):
 
 
 
-def processTrainData(ds,dim=(32,256)):
+def processData_BOISE_STATE(ds,dim=(32,256)):
     '''
         creates the training data from **Boise State Dataset**
         args:
@@ -50,7 +50,7 @@ def processTrainData(ds,dim=(32,256)):
     df=ds.boise_state.df
     df["img_path"]=df.filename.progress_apply(lambda x: os.path.join(ds.boise_state.dir,x))
 
-    save_path=ds.train_path
+    save_path=ds.boise_state_path
     unicodes=ds.bangla.valid_unicodes
 
 
@@ -97,4 +97,4 @@ def processTrainData(ds,dim=(32,256)):
     
 
     df=df[["filename","word","graphemes","unicodes"]]
-    df.to_csv(ds.train_csv,index=False)
+    df.to_csv(ds.boise_state_csv,index=False)

@@ -27,26 +27,28 @@ class DataSet(object):
         #-------------------
         # save_paths
         #------------------        
-        self.save_path      =   save_path
-        self.images_path    =   create_dir(self.save_path,"images")
-        self.test_path      =   create_dir(self.images_path,"test")     # pages data
-        self.train_path     =   create_dir(self.images_path,"train")    # boise state data
-        self.synthetic_path =   create_dir(self.images_path,"synthetic")# synthetic data 
+        self.save_path                  =   create_dir(save_path,"data")
+        self.images_path                =   create_dir(self.save_path,"images")
+        self.bangla_writing_path        =   create_dir(self.images_path,"bangla_writing")       # bangla_writing data
+        self.boise_state_path           =   create_dir(self.images_path,"boise_state")          # boise state data
+        self.bn_htr_path                =   create_dir(self.images_path,"bn_htr")               # bn htr data
+        self.synthetic_path             =   create_dir(self.images_path,"synthetic")            # synthetic data 
 
         # csv-s
-        self.train_csv      =   os.path.join(self.save_path,"train.csv")
-        self.test_csv       =   os.path.join(self.save_path,"test.csv")
-        self.synth_csv      =   os.path.join(self.save_path,"synthetic.csv")
+        self.bangla_writing_csv         =   os.path.join(self.save_path,"bangla_writing.csv")
+        self.boise_state_csv            =   os.path.join(self.save_path,"boise_state.csv")
+        self.bn_htr_csv            =   os.path.join(self.save_path,"bn_htr.csv")
+        self.synth_csv                  =   os.path.join(self.save_path,"synthetic.csv")
 
         self.config_json    =   os.path.join(self.save_path,"config.json")
         
         
         class tfrecords:
-            dir         =   create_dir(self.save_path,"tfrecords")
-            synthetic   =   create_dir(dir,"synthetic")
-            written     =   create_dir(dir,"written")
-            train       =   create_dir(written,"train")
-            test        =   create_dir(written,"test")        
+            dir                 =   create_dir(self.save_path,"tfrecords")
+            synthetic           =   create_dir(dir,"synthetic")
+            bn_htr              =   create_dir(dir,"br_htr")
+            bangla_writing      =   create_dir(dir,"bangla_writing")
+            boise_state         =   create_dir(dir,"boise_state")        
 
 
         #-------------------
@@ -56,11 +58,15 @@ class DataSet(object):
             dir   =   os.path.join(data_dir,"graphemes")
             csv   =   os.path.join(data_dir,"graphemes.csv")
         
-        self.pages       =   os.path.join(data_dir,"pages")
+        self.pages       =   os.path.join(data_dir,"bangla_writing")
         
         class boise_state:
             dir =   os.path.join(data_dir,"boise_state","words")
             csv =   os.path.join(data_dir,"boise_state","labels.csv")
+        
+        class bn_htr:
+            dir =   os.path.join(data_dir,"bn_htr","words")
+            csv =   os.path.join(data_dir,"bn_htr","labels.csv")
         
         class bangla:
             vowels                 =   ['অ', 'আ', 'ই', 'ঈ', 'উ', 'ঊ', 'ঋ', 'এ', 'ঐ', 'ও', 'ঔ']
@@ -92,18 +98,22 @@ class DataSet(object):
         self.tfrecords  = tfrecords
         self.boise_state= boise_state
         self.bangla     = bangla
+        self.bn_htr     = bn_htr  
 
         # error check
         self.__checkExistance()
 
         # get df
-        self.graphemes.df  =self.__getDataFrame(self.graphemes.csv)
-        self.boise_state.df=self.__getDataFrame(self.boise_state.csv,label_type="list")
+        self.graphemes.df   =self.__getDataFrame(self.graphemes.csv)
+        self.boise_state.df =self.__getDataFrame(self.boise_state.csv,label_type="list")
+        self.bn_htr.df      =self.__getDataFrame(self.bn_htr.csv,label_type="list")
         
         # data validity
         self.__checkDataValidity(self.graphemes,"graphemes")
         self.__checkDataValidity(self.pages,"pages",check_pages=True)
         self.__checkDataValidity(self.boise_state,"graphemes")
+        self.__checkDataValidity(self.bn_htr,"graphemes",extra=True)
+        
         # graphemes
         self.known_graphemes=list(self.graphemes.df.label.unique())
 
@@ -128,7 +138,7 @@ class DataSet(object):
             LOG_INFO(f"{e}",mcolor="red") 
                 
 
-    def __checkDataValidity(self,obj,iden,check_pages=False):
+    def __checkDataValidity(self,obj,iden,check_pages=False,extra=False):
         '''
             checks that a folder does contain proper images
         '''
@@ -141,7 +151,8 @@ class DataSet(object):
             else:
                 imgs=[img_path for img_path in tqdm(glob(os.path.join(obj.dir,"*.*")))]
                 assert len(imgs)>0, f"No data paths found({iden})"
-                assert len(imgs)==len(obj.df), f"Image paths doesnot match labels data({iden}:{len(imgs)}!={len(obj.df)})"
+                if not extra:
+                    assert len(imgs)==len(obj.df), f"Image paths doesnot match labels data({iden}:{len(imgs)}!={len(obj.df)})"
                 
         except Exception as e:
             LOG_INFO(f"Error in Validity Check:{iden}",mcolor="yellow")
@@ -157,6 +168,8 @@ class DataSet(object):
         assert os.path.exists(self.pages),"Pages dir not found"
         assert os.path.exists(self.boise_state.dir),"Boise State Image Dir not found"
         assert os.path.exists(self.boise_state.csv),"Boise State csv not found"
+        assert os.path.exists(self.bn_htr.dir),"BN HTR State Image Dir not found"
+        assert os.path.exists(self.bn_htr.csv),"BN HTR csv not found"
         
         LOG_INFO("All paths found",mcolor="green")
         
