@@ -12,7 +12,6 @@ import random
 import pandas as pd 
 from tqdm import tqdm
 from .utils import correctPadding
-from skimage.util import random_noise
 tqdm.pandas()
 #--------------------
 # ops
@@ -82,9 +81,6 @@ def createWords(ds,num_samples,dim=(32,256)):
                 h,w=img.shape 
                 width= int(img_height* w/h) 
                 img=cv2.resize(img,(width,img_height),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
-                # add noise
-                noise_img = random_noise(img, mode='s&p',amount=random.choice([0.2,0.15,0.1,0.05]))
-                img = np.array(255*noise_img, dtype = 'uint8')
                 # save
                 img=correctPadding(img,dim)     
                 # save the image

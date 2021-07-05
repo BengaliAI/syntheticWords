@@ -148,7 +148,7 @@ if __name__=="__main__":
     parser.add_argument("save_path", help="Path of the directory to save the dataset")
     parser.add_argument("--img_height",required=False,default=32,help ="height for each grapheme: default=32")
     parser.add_argument("--img_width",required=False,default=256,help ="width dimension of word images: default=256")
-    parser.add_argument("--num_samples",required=False,default=250,help ="number of samples to create per word: default=250")
+    parser.add_argument("--num_samples",required=False,default=100,help ="number of samples to create per word: default=250")
     args = parser.parse_args()
     main(args)
     
