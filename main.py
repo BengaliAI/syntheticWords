@@ -81,13 +81,15 @@ def main(args):
 
     
     
+    # process
+    df=df.drop_duplicates(subset=['word'])
+    # error for none type
+    df.dropna(inplace=True)
+    # cleanup
+    df.graphemes    =   df.graphemes.progress_apply(lambda x: x if set(x)<=set(ds.known_graphemes) else None)
+    df.dropna(inplace=True)
+    
     class word:
-        df=df.drop_duplicates(subset=['word'])
-        # error for none type
-        df.dropna(inplace=True)
-        # cleanup
-        df.graphemes    =   df.graphemes.progress_apply(lambda x: x if set(x)<=set(ds.known_graphemes) else None)
-        df.dropna(inplace=True)
         data=df[["graphemes","clabel","glabel","word"]]
     
     ds.word=word
@@ -142,7 +144,7 @@ if __name__=="__main__":
         parsing and execution
     '''
     parser = argparse.ArgumentParser("Recognizer Training Dataset Creating Script")
-    parser.add_argument("data_path", help="Path of the data folder that contains converted and raw folder from ReadMe.md)")
+    parser.add_argument("data_path", help="Path of the source data folder ")
     parser.add_argument("save_path", help="Path of the directory to save the dataset")
     parser.add_argument("--img_height",required=False,default=32,help ="height for each grapheme: default=32")
     parser.add_argument("--img_width",required=False,default=256,help ="width dimension of word images: default=256")
