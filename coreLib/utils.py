@@ -87,7 +87,7 @@ def padImage(img,pad_loc,pad_dim):
         img =np.concatenate([top_pad,img,bot_pad],axis=0)
     return img.astype("uint8")    
 
-def correctPadding(img,dim=(32,256)):
+def correctPadding(img,dim):
     '''
         corrects an image padding 
     '''
@@ -122,7 +122,7 @@ def get_sorted_vocab(symbol_lists):
             vocab+=symbol_list
     vocab=sorted(list(set(vocab)))
     # ACCOUNT FOR BLANK INDEX
-    vocab=[" "]+vocab
+    vocab=[""]+vocab
     return vocab
 #---------------------------------------------------------------
 def get_encoded_label(symbol_list,vocab):

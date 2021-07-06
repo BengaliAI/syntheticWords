@@ -14,7 +14,7 @@ import pandas as pd
 from tqdm import tqdm
 from ast import literal_eval
 
-from coreLib.utils import get_encoded_label,get_sorted_vocab,pad_encoded_label
+from coreLib.utils import LOG_INFO, get_encoded_label,get_sorted_vocab,pad_encoded_label
 from coreLib.dataset import DataSet
 from coreLib.bangla_writing import processData_BANGLA_WRITING
 from coreLib.boise_state import processData_BOISE_STATE
@@ -39,14 +39,17 @@ def main(args):
     #-----------------------------
     # bangla writing data
     #-----------------------------
+    LOG_INFO("bangla writing data",mcolor="cyan")
     processData_BANGLA_WRITING(ds,dim=(img_height,img_width))
     #-----------------------------
     # boise state data
     #-----------------------------
+    LOG_INFO("boise state data",mcolor="cyan")
     processData_BOISE_STATE(ds,dim=(img_height,img_width))
     #-----------------------------
     # bn htr data
     #-----------------------------
+    LOG_INFO("bn htr data",mcolor="cyan")
     processData_BN_HTR(ds,dim=(img_height,img_width))
     #-----------------------------
     # process labels
@@ -56,7 +59,7 @@ def main(args):
     df_bw         =   pd.read_csv(ds.bangla_writing_csv)
     df_bs         =   pd.read_csv(ds.boise_state_csv)
     df            =   pd.concat([df_bh,df_bw,df_bs],ignore_index=True)
-    eval
+    
     df.graphemes    =   df.graphemes.progress_apply(lambda x: literal_eval(x))
     df.unicodes     =   df.unicodes.progress_apply(lambda x: literal_eval(x))
 
@@ -147,8 +150,8 @@ if __name__=="__main__":
     parser.add_argument("data_path", help="Path of the source data folder ")
     parser.add_argument("save_path", help="Path of the directory to save the dataset")
     parser.add_argument("--img_height",required=False,default=32,help ="height for each grapheme: default=32")
-    parser.add_argument("--img_width",required=False,default=256,help ="width dimension of word images: default=256")
-    parser.add_argument("--num_samples",required=False,default=100,help ="number of samples to create per word: default=250")
+    parser.add_argument("--img_width",required=False,default=128,help ="width dimension of word images: default=128")
+    parser.add_argument("--num_samples",required=False,default=100,help ="number of samples to create per word: default=100")
     args = parser.parse_args()
     main(args)
     

@@ -75,7 +75,7 @@ def extract_word_images_and_labels(img_path):
 #--------------------
 # ops
 #--------------------
-def processData_BANGLA_WRITING(ds,dim=(32,256)):
+def processData_BANGLA_WRITING(ds,dim):
     '''
         creates the testing data from **Bangla Writing** dataset
         args:

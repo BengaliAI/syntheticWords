@@ -32,7 +32,7 @@ def correctLabels(unicodes,labels):
 
 
 
-def processData_BOISE_STATE(ds,dim=(32,256)):
+def processData_BOISE_STATE(ds,dim):
     '''
         creates the training data from **Boise State Dataset**
         args:

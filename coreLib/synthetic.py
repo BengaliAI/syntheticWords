@@ -16,7 +16,7 @@ tqdm.pandas()
 #--------------------
 # ops
 #--------------------
-def createWords(ds,num_samples,dim=(32,256)):
+def createWords(ds,num_samples,dim):
     '''
         creates handwriten word image
         args:

@@ -18,7 +18,7 @@ GP=GraphemeParser()
 #---------------------------------------------------------------
 # ops
 #---------------------------------------------------------------
-def processData_BN_HTR(ds,dim=(32,256)):
+def processData_BN_HTR(ds,dim):
     '''
         creates the training data from **BN HTR Dataset**
         args:

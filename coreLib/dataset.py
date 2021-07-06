@@ -37,7 +37,7 @@ class DataSet(object):
         # csv-s
         self.bangla_writing_csv         =   os.path.join(self.save_path,"bangla_writing.csv")
         self.boise_state_csv            =   os.path.join(self.save_path,"boise_state.csv")
-        self.bn_htr_csv            =   os.path.join(self.save_path,"bn_htr.csv")
+        self.bn_htr_csv                 =   os.path.join(self.save_path,"bn_htr.csv")
         self.synth_csv                  =   os.path.join(self.save_path,"synthetic.csv")
 
         self.config_json    =   os.path.join(self.save_path,"config.json")
@@ -46,7 +46,7 @@ class DataSet(object):
         class tfrecords:
             dir                 =   create_dir(self.save_path,"tfrecords")
             synthetic           =   create_dir(dir,"synthetic")
-            bn_htr              =   create_dir(dir,"br_htr")
+            bn_htr              =   create_dir(dir,"bn_htr")
             bangla_writing      =   create_dir(dir,"bangla_writing")
             boise_state         =   create_dir(dir,"boise_state")        
 
