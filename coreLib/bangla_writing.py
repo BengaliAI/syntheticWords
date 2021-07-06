@@ -87,7 +87,7 @@ def processData_BANGLA_WRITING(ds,dim):
 
     img_idens=[]
     img_labels=[]
-    
+    src=[]
     
     i=0
     
@@ -122,6 +122,7 @@ def processData_BANGLA_WRITING(ds,dim):
                     # append
                     img_idens.append(f"{i}.png")
                     img_labels.append(label)
+                    src.append(os.path.basename(img_path))
                     i=i+1
                     
                 except Exception as e: 
@@ -130,7 +131,7 @@ def processData_BANGLA_WRITING(ds,dim):
     
     
     # test dataframe
-    df              =   pd.DataFrame({"filename":img_idens,"word":img_labels})
+    df              =   pd.DataFrame({"filename":img_idens,"word":img_labels,"src":src})
     # graphemes
     df["graphemes"] =   df.word.progress_apply(lambda x:GP.word2grapheme(x))
     # unicodes
@@ -138,7 +139,14 @@ def processData_BANGLA_WRITING(ds,dim):
     
     df.dropna(inplace=True)
     
+    # test train split
+    srcs=list(df.src.unique())
+    random.shuffle(srcs)
+    eval_len=int(len(srcs)*20/100)
+    eval_srcs=srcs[:eval_len]
+    df.src=df.src.progress_apply(lambda x: "eval" if x in eval_srcs else "train")
+
     
 
-    df=df[["filename","word","graphemes","unicodes"]]
+    df=df[["filename","word","graphemes","unicodes","src"]]
     df.to_csv(ds.bangla_writing_csv,index=False)    

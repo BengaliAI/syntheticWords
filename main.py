@@ -54,11 +54,21 @@ def main(args):
     #-----------------------------
     # process labels
     #-----------------------------
-    # combine
-    df_bh         =   pd.read_csv(ds.bn_htr_csv)
+    # combine 
+    ## bw split
     df_bw         =   pd.read_csv(ds.bangla_writing_csv)
+
+    df_train      =   df_bw.loc[df_bw.src=="train"]
+    df_train      =   df_train[["filename","word","graphemes","unicodes"]]
+    
+    df_eval       =   df_bw.loc[df_bw.src=="eval"]
+    df_eval       =   df_eval[["filename","word","graphemes","unicodes"]]
+    
+
+
+    df_bh         =   pd.read_csv(ds.bn_htr_csv)
     df_bs         =   pd.read_csv(ds.boise_state_csv)
-    df            =   pd.concat([df_bh,df_bw,df_bs],ignore_index=True)
+    df            =   pd.concat([df_train,df_eval,df_bh,df_bs],ignore_index=True)
     
     df.graphemes    =   df.graphemes.progress_apply(lambda x: literal_eval(x))
     df.unicodes     =   df.unicodes.progress_apply(lambda x: literal_eval(x))
@@ -78,9 +88,25 @@ def main(args):
     df.glabel       =    df.glabel.progress_apply(lambda x: pad_encoded_label(x,max_len,0))    
 
 
-    df_bh         =   df.iloc[:len(df_bh)]
-    df_bw         =   df.iloc[len(df_bh):len(df_bh)+len(df_bw)]
-    df_bs         =   df.iloc[len(df_bh)+len(df_bw):]
+    # df indexs:df_train,df_eval,df_bh,df_bs
+    train_idx_start=0
+    train_idx_end  =len(df_train)
+
+    eval_idx_start =train_idx_end
+    eval_idx_end   =train_idx_end+len(df_eval)
+
+    bh_idx_start   =eval_idx_end
+    bh_idx_end     =eval_idx_end+len(df_bh)
+
+    bs_idx_start   =bh_idx_end
+    bs_idx_end     =len(df)
+    
+
+
+    df_train      =   df.iloc[train_idx_start:train_idx_end]
+    df_eval       =   df.iloc[eval_idx_start:eval_idx_end]
+    df_bh         =   df.iloc[bh_idx_start:bh_idx_end]
+    df_bs         =   df.iloc[bs_idx_start:bs_idx_end]
 
     
     
@@ -103,10 +129,18 @@ def main(args):
     df_synth=createWords(ds,num_samples,dim=(img_height,img_width))
     
     # construct files
+    df_train["img_path"]=df_train.filename.progress_apply(lambda x:os.path.join(ds.bangla_writing_path,x))
+    df_eval["img_path"] =df_eval.filename.progress_apply(lambda x:os.path.join(ds.bangla_writing_path,x))
     df_bh["img_path"]=df_bh.filename.progress_apply(lambda x:os.path.join(ds.bn_htr_path,x))
-    df_bw["img_path"]=df_bw.filename.progress_apply(lambda x:os.path.join(ds.bangla_writing_path,x))
     df_bs["img_path"]=df_bs.filename.progress_apply(lambda x:os.path.join(ds.boise_state_path,x))
     df_synth["img_path"]=df_synth.filename.progress_apply(lambda x:os.path.join(ds.synthetic_path,x))
+
+    # saving
+    df_train.to_csv(ds.bangla_writing_train_csv,index=False)
+    df_eval.to_csv(ds.bangla_writing_eval_csv,index=False)
+    df_bh.to_csv(ds.bn_htr_csv,index=False)
+    df_bs.to_csv(ds.boise_state_csv,index=False)
+    df_synth.to_csv(ds.synth_csv,index=False)   
 
     # format
     columns     =   ["img_path","clabel","glabel"]
@@ -117,7 +151,9 @@ def main(args):
     
     
     # create tfrecords
-    df2rec(df_bw,ds.tfrecords.bangla_writing,tf_size)
+    df2rec(df_train,ds.tfrecords.train_bw,tf_size)
+    df2rec(df_eval,ds.tfrecords.eval_bw,tf_size)
+    
     df2rec(df_bs,ds.tfrecords.boise_state,tf_size)
     df2rec(df_bh,ds.tfrecords.bn_htr,tf_size)
     ## synthetic

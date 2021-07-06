@@ -35,7 +35,10 @@ class DataSet(object):
         self.synthetic_path             =   create_dir(self.images_path,"synthetic")            # synthetic data 
 
         # csv-s
-        self.bangla_writing_csv         =   os.path.join(self.save_path,"bangla_writing.csv")
+        self.bangla_writing_csv         =   os.path.join(self.save_path,"bangla_writing.csv")   # intermediate saving
+        self.bangla_writing_train_csv           =   os.path.join(self.save_path,"bangla_writing_train.csv")
+        self.bangla_writing_eval_csv            =   os.path.join(self.save_path,"bangla_writing_eval.csv")
+        
         self.boise_state_csv            =   os.path.join(self.save_path,"boise_state.csv")
         self.bn_htr_csv                 =   os.path.join(self.save_path,"bn_htr.csv")
         self.synth_csv                  =   os.path.join(self.save_path,"synthetic.csv")
@@ -47,9 +50,12 @@ class DataSet(object):
             dir                 =   create_dir(self.save_path,"tfrecords")
             synthetic           =   create_dir(dir,"synthetic")
             bn_htr              =   create_dir(dir,"bn_htr")
+            boise_state         =   create_dir(dir,"boise_state")  
+            # split case      
             bangla_writing      =   create_dir(dir,"bangla_writing")
-            boise_state         =   create_dir(dir,"boise_state")        
-
+            train_bw            =   create_dir(bangla_writing,"train")
+            eval_bw             =   create_dir(bangla_writing,"eval")
+            
 
         #-------------------
         # resource
