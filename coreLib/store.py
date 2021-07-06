@@ -52,7 +52,7 @@ def df2rec(df,save_path,data_size):
     '''
         tf record wrapper
     '''
-    LOG_INFO("Creating TFRECORDS:",save_path)
+    LOG_INFO(f"Creating TFRECORDS:{save_path}")
     for idx in tqdm(range(0,len(df),data_size)):
         _df        =   df.iloc[idx:idx+data_size]  
         rnum       =   idx//data_size
