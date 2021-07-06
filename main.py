@@ -124,7 +124,7 @@ def main(args):
     ds.word=word
      
     
-
+    LOG_INFO("Synthetic data",mcolor="cyan")
     # create synthetic data
     df_synth=createWords(ds,num_samples,dim=(img_height,img_width))
     
@@ -144,8 +144,9 @@ def main(args):
 
     # format
     columns     =   ["img_path","clabel","glabel"]
+    df_train    =   df_train[columns]
+    df_eval     =   df_eval[columns]
     df_bh       =   df_bh[columns]
-    df_bw       =   df_bw[columns]
     df_bs       =   df_bs[columns]
     df_synth    =   df_synth[columns]   
     
