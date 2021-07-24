@@ -89,11 +89,14 @@ def padImage(img,pad_loc,pad_dim,pad_type,pad_val):
         # shape
         h,w=img.shape
         # pad heights
-        pad_height =pad_dim-h
-        # pads
-        pad =np.ones((pad_height,w))*pad_val
-        # pad
-        img =np.concatenate([img,pad],axis=0)
+        if h>= pad_dim:
+            return img 
+        else:
+            pad_height =pad_dim-h
+            # pads
+            pad =np.ones((pad_height,w))*pad_val
+            # pad
+            img =np.concatenate([img,pad],axis=0)
     return img.astype("uint8")    
 
 def correctPadding(img,dim,ptype="central",pvalue=255):
@@ -109,8 +112,10 @@ def correctPadding(img,dim,ptype="central",pvalue=255):
 
     '''
     img_height,img_width=dim
+    mask=0
     # check for pad
     h,w=img.shape
+    
     if w > img_width:
         # for larger width
         h_new= int(img_width* h/w) 
@@ -119,9 +124,10 @@ def correctPadding(img,dim,ptype="central",pvalue=255):
         img=padImage(img,
                      pad_loc="tb",
                      pad_dim=img_height,
-                     pad_type="central",
+                     pad_type=ptype,
                      pad_val=pvalue)
-                      
+        mask=0
+
     elif w < img_width:
         # pad
         img=padImage(img,
@@ -129,10 +135,11 @@ def correctPadding(img,dim,ptype="central",pvalue=255):
                     pad_dim=img_width,
                     pad_type=ptype,
                     pad_val=pvalue)
+        mask=w
     
     # error avoid
     img=cv2.resize(img,(img_width,img_height),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
-    return img 
+    return img,mask 
 
 #----------------------------------------------------------------
 # Dataset utils

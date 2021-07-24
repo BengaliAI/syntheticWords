@@ -37,7 +37,11 @@ def createImgFromComps(df,comps,pad):
     img_paths=[]
     for comp in comps:
         cdf=df.loc[df.label==comp]
-        img_paths.append(cdf.iloc[random.randint(0,len(cdf)),2])
+        cdf=cdf.sample(frac=1)
+        if len(cdf)==1:
+            img_paths.append(cdf.iloc[0,2])
+        else:
+            img_paths.append(cdf.iloc[random.randint(0,len(cdf)-1),2])
     
     # get images
     imgs=[cv2.imread(img_path,0) for img_path in img_paths]
@@ -88,7 +92,7 @@ def createImgFromComps(df,comps,pad):
             img=cv2.resize(img,pad.single_pad_dim,fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
             if tp:
                 h,w=img.shape
-                bot=np.ones((pad.height,w))*255
+                top=np.ones((pad.height,w))*255
                 img=np.concatenate([top,img],axis=0)
         elif hf=="bt" or hf=="tb":
             img=cv2.resize(img,pad.double_pad_dim,fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
@@ -173,6 +177,8 @@ def saveDictionary(dictionary,
     # dataframe vars
     filename=[]
     labels=[]
+    imasks=[]
+    tmasks=[]
     # loop
     for idx in tqdm(range(len(dictionary))):
         comps=dictionary.iloc[idx,1]
@@ -186,15 +192,17 @@ def saveDictionary(dictionary,
                                min_dim=comp_dim)
 
         # correct padding
-        img=correctPadding(img,img_dim)
-        tgt=correctPadding(tgt,img_dim)
+        img,imask=correctPadding(img,img_dim,ptype="left")
+        tgt,tmask=correctPadding(tgt,img_dim,ptype="left")
         # save
         fname=f"{idx}.png"
         cv2.imwrite(os.path.join(save.img,fname),img)
         cv2.imwrite(os.path.join(save.tgt,fname),tgt)
         filename.append(fname)
         labels.append(comps)
-    df=pd.DataFrame({"filename":filename,"labels":labels})
+        imasks.append(imask)
+        tmasks.append(tmask)
+    df=pd.DataFrame({"filename":filename,"labels":labels,"image_mask":imasks,"target_mask":tmasks})
     df.to_csv(os.path.join(save.csv),index=False)
         
 #--------------------
@@ -247,12 +255,11 @@ def createWords(iden,
     #---------------
     # processing
     #---------------
-   
+    save_dir=create_dir(save_dir,iden)
     # create img_path in df
-    df["img_path"]=df.filename.progress_apply(lambda x:os.path.join(img_dir,x)) 
+    df["img_path"]=df.filename.progress_apply(lambda x:os.path.join(img_dir,f"{x}.bmp")) 
     # save_paths
-    class save:
-        save_dir=create_dir(save_dir,iden)
+    class save:    
         img=create_dir(save_dir,"images")
         tgt=create_dir(save_dir,"targtes")
         csv=os.path.join(save_dir,"data.csv")
