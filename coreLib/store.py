@@ -34,11 +34,18 @@ def toTfrecord(df,rnum,rec_path):
             clabel  =df.iloc[idx,1]
             glabel  =df.iloc[idx,2]
              
+            tgt_path=img_path.replace("images","targets")
             # img
             with(open(img_path,'rb')) as fid:
                 image_png_bytes=fid.read()
+
+            # tgt
+            with(open(tgt_path,'rb')) as fid:
+                target_png_bytes=fid.read()
+
             # feature desc
             data ={ 'image':_bytes_feature(image_png_bytes),
+                    'target':_bytes_feature(target_png_bytes),
                     'clabel':_int64_list_feature(clabel),
                     'glabel':_int64_list_feature(glabel),
             }

@@ -3,6 +3,7 @@
 @author:MD.Nazmuddoha Ansary
 """
 from __future__ import print_function
+from numpy.lib.financial import pv
 #---------------------------------------------------------------
 # imports
 #---------------------------------------------------------------
@@ -53,43 +54,59 @@ def stripPads(arr,
     return arr
 
 
-def padImage(img,pad_loc,pad_dim):
+def padImage(img,pad_loc,pad_dim,pad_type,pad_val):
     '''
         pads an image with white value
         args:
             img     :       the image to pad
             pad_loc :       (lr/tb) lr: left-right pad , tb=top_bottom pad
-            pad_dim :       the dimension to pad upto 
+            pad_dim :       the dimension to pad upto
+            pad_type:       central or left aligned pad
+            pad_val :       the value to pad 
     '''
     
     if pad_loc=="lr":
         # shape
         h,w=img.shape
-        # pad widths
-        left_pad_width =(pad_dim-w)//2
-        # print(left_pad_width)
-        right_pad_width=pad_dim-w-left_pad_width
-        # pads
-        left_pad =np.ones((h,left_pad_width))*255
-        right_pad=np.ones((h,right_pad_width))*255
-        # pad
-        img =np.concatenate([left_pad,img,right_pad],axis=1)
+        if pad_type=="central":
+            # pad widths
+            left_pad_width =(pad_dim-w)//2
+            # print(left_pad_width)
+            right_pad_width=pad_dim-w-left_pad_width
+            # pads
+            left_pad =np.ones((h,left_pad_width))*pad_val
+            right_pad=np.ones((h,right_pad_width))*pad_val
+            # pad
+            img =np.concatenate([left_pad,img,right_pad],axis=1)
+        else:
+            # pad widths
+            pad_width =pad_dim-w
+            # pads
+            pad =np.ones((h,pad_width))*pad_val
+            # pad
+            img =np.concatenate([img,pad],axis=1)
     else:
         # shape
         h,w=img.shape
         # pad heights
-        top_pad_height =(pad_dim-h)//2
-        bot_pad_height=pad_dim-h-top_pad_height
+        pad_height =pad_dim-h
         # pads
-        top_pad =np.ones((top_pad_height,w))*255
-        bot_pad=np.ones((bot_pad_height,w))*255
+        pad =np.ones((pad_height,w))*pad_val
         # pad
-        img =np.concatenate([top_pad,img,bot_pad],axis=0)
+        img =np.concatenate([img,pad],axis=0)
     return img.astype("uint8")    
 
-def correctPadding(img,dim):
+def correctPadding(img,dim,ptype="central",pvalue=255):
     '''
         corrects an image padding 
+        args:
+            img     :       numpy array of single channel image
+            dim     :       tuple of desired img_height,img_width
+            ptype   :       type of padding (central,left)
+            pvalue  :       the value to pad
+        returns:
+            correctly padded image
+
     '''
     img_height,img_width=dim
     # check for pad
@@ -99,10 +116,20 @@ def correctPadding(img,dim):
         h_new= int(img_width* h/w) 
         img=cv2.resize(img,(img_width,h_new),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
         # pad
-        img=padImage(img,pad_loc="tb",pad_dim=img_height) 
+        img=padImage(img,
+                     pad_loc="tb",
+                     pad_dim=img_height,
+                     pad_type="central",
+                     pad_val=pvalue)
+                      
     elif w < img_width:
         # pad
-        img=padImage(img,pad_loc="lr",pad_dim=img_width)
+        img=padImage(img,
+                    pad_loc="lr",
+                    pad_dim=img_width,
+                    pad_type=ptype,
+                    pad_val=pvalue)
+    
     # error avoid
     img=cv2.resize(img,(img_width,img_height),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
     return img 
@@ -111,19 +138,25 @@ def correctPadding(img,dim):
 # Dataset utils
 #----------------------------------------------------------------
 
-def get_sorted_vocab(symbol_lists):
+def extend_vocab(symbol_lists,curr_vocab):
     '''
         creates a sorted vocabulary list 
         args:
             symbol_lists    :   list of list of symbols
+            curr_vocab      :   current vocab
     '''
     vocab=[]
     for symbol_list in symbol_lists:
             vocab+=symbol_list
     vocab=sorted(list(set(vocab)))
+    
+    new_vocab=[]
     # ACCOUNT FOR BLANK INDEX
-    vocab=[""]+vocab
-    return vocab
+    for v in vocab:
+        if v not in curr_vocab:
+            new_vocab.append(v)
+    
+    return new_vocab
 #---------------------------------------------------------------
 def get_encoded_label(symbol_list,vocab):
     '''
