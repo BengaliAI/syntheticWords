@@ -2,7 +2,7 @@
 # synthetic words
 
 ```python
-Version: 0.0.9     
+Version: 0.1.0     
 ```
 ### **Related resources**:
 
@@ -24,58 +24,82 @@ Gnome       : 3.28.2
 * ```sudo ldconfig``` (librarqm local repo)
 
 **python requirements**
-* ```pip3 install -r requirements.txt``` 
+* **pip requirements**: ```pip3 install -r requirements.txt``` 
 > Its better to use a virtual environment 
-
+OR use conda-
+* **conda**: use environment.yml
 
 
 
 # Synthetic words
-## Dataset
-* The **source data** folder can be found [here](https://www.kaggle.com/nazmuddhohaansary/recogbnsrcbsbwbh)
-
-
-
-## RecognizerTraining
- 
-* run **./main.py**
+## Bangla Synthetic Dataset
+* For creating **synthetic bangla (numbers and letters)**,the following datasets are used:
+    * The bangla **graphemes** dataset is taken from [here](https://www.kaggle.com/pestipeti/bengali-quick-eda/#data). 
+    * The bangla **numbers** dataset is taken from [here](https://www.kaggle.com/c/numta/data) 
+* A processed version of the dataset can be found [here](https://www.kaggle.com/nazmuddhohaansary/recognizer-source). The folder structre should look as follows
+    
 ```python
+    ├── bangla
+       ├── graphemes.csv
+       ├── numbers.csv
+       ├── dictionary.csv
+       ├── fonts
+       ├── graphemes
+       └── numbers
+```
+* To create the dataset execute **data_banglaSynth.py**
 
-    usage: Recognizer Training Dataset Creating Script [-h]
-                                                    [--img_height IMG_HEIGHT]
-                                                    [--img_width IMG_WIDTH]
-                                                    [--num_samples NUM_SAMPLES]
-                                                    data_path save_path
+```python
+    usage: Recognizer Training: Bangla Synthetic (numbers and graphemes) Dataset Creating Script [-h] [--img_height IMG_HEIGHT] [--pad_height PAD_HEIGHT] [--img_width IMG_WIDTH] [--num_samples NUM_SAMPLES]
+                                                                                                data_path save_path
 
     positional arguments:
-    data_path             Path of the source data folder 
+    data_path             Path of the source data folder
     save_path             Path of the directory to save the dataset
 
     optional arguments:
     -h, --help            show this help message and exit
     --img_height IMG_HEIGHT
-                            height for each grapheme: default=32
+                            height for each grapheme: default=64
+    --pad_height PAD_HEIGHT
+                            pad height for each grapheme for alignment correction: default=20
     --img_width IMG_WIDTH
-                            width dimension of word images: default=256
+                            width dimension of word images: default=512
     --num_samples NUM_SAMPLES
-                            number of samples to create per word: default=250
+                            number of samples to create when not using dictionary:default=100000
+
 
 
 ```
 
-         
-* Exception in execution:
+**NOTES**:
+* the **data_path** is the container of the unzipped bangla folder. I.E- the **source** folder should maintain the following structre:
 
 ```python
- #LOG     :error in creating image:183_16_0.jpg label:শ্রেষ্ঠ,
- #error:OpenCV(4.2.0) /io/opencv/modules/imgcodecs/src/loadsave.cpp:715: error: (-215:Assertion failed) !_img.empty() in function 'imwrite'
-
- #LOG     :error in creating image:256_14_1.jpg label:ব,
- #error:OpenCV(4.2.0) /io/opencv/modules/imgcodecs/src/loadsave.cpp:715: error: (-215:Assertion failed) !_img.empty() in function 'imwrite'
-
+    ├── source
+       ├── bangla
+       ├── other random stuff
+       ........................
+       ........................ 
+    
 ```
+* upon execution two folders namely : **bangla.graphemes** and **bangla.numbers** will be created at the save_path.
+* These folders will maintain the following structre:
 
-# References
+```python
+    ├── savepath
+       ├── bangla.XXXXX
+            ├── images
+            ├── targets
+            ├── data.csv
+```
+* a **vocab.json** file will be created in the working directory. This will be used to map **unicode and grapheme level** labeling along with corresponding **data.csv**
+* As the datasets are added further (future), this vocab.json will change holding the "banglaSynth" vocabulary as the base case.              
+* **data.csv** contains the following columns: filename,labels,image_mask,target_mask. Where labels indicate grapheme components. The **_mask** data can be used for attention based models (like [robust scanner](https://arxiv.org/abs/2007.07542))
+* **targets** folder will be used for **font-face modifier model**
+* any type of **cnn-lstm-ctc** model data can be created from the generated dataset
+
+# References/Tools
 
 * [word2grapheme](https://www.kaggle.com/reasat/extract-word-image-and-label) (@author: [Tahsin Reasat](https://www.kaggle.com/reasat))
 

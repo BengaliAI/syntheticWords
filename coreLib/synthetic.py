@@ -11,7 +11,7 @@ import numpy as np
 import random
 import pandas as pd 
 from tqdm import tqdm
-from .utils import correctPadding,create_dir,stripPads
+from .utils import LOG_INFO, correctPadding,create_dir,stripPads
 import PIL
 import PIL.Image , PIL.ImageDraw , PIL.ImageFont 
 tqdm.pandas()
@@ -181,27 +181,30 @@ def saveDictionary(dictionary,
     tmasks=[]
     # loop
     for idx in tqdm(range(len(dictionary))):
-        comps=dictionary.iloc[idx,1]
-        # image
-        img=createImgFromComps(df=compdf,
-                              comps=comps,
-                              pad=pad)
-        # target
-        tgt=createTgtFromComps(font=font,
-                               comps=comps,
-                               min_dim=comp_dim)
+        try:
+            comps=dictionary.iloc[idx,1]
+            # image
+            img=createImgFromComps(df=compdf,
+                                comps=comps,
+                                pad=pad)
+            # target
+            tgt=createTgtFromComps(font=font,
+                                comps=comps,
+                                min_dim=comp_dim)
 
-        # correct padding
-        img,imask=correctPadding(img,img_dim,ptype="left")
-        tgt,tmask=correctPadding(tgt,img_dim,ptype="left")
-        # save
-        fname=f"{idx}.png"
-        cv2.imwrite(os.path.join(save.img,fname),img)
-        cv2.imwrite(os.path.join(save.tgt,fname),tgt)
-        filename.append(fname)
-        labels.append(comps)
-        imasks.append(imask)
-        tmasks.append(tmask)
+            # correct padding
+            img,imask=correctPadding(img,img_dim,ptype="left")
+            tgt,tmask=correctPadding(tgt,img_dim,ptype="left")
+            # save
+            fname=f"{idx}.png"
+            cv2.imwrite(os.path.join(save.img,fname),img)
+            cv2.imwrite(os.path.join(save.tgt,fname),tgt)
+            filename.append(fname)
+            labels.append(comps)
+            imasks.append(imask)
+            tmasks.append(tmask)
+        except Exception as e:
+            LOG_INFO(e)
     df=pd.DataFrame({"filename":filename,"labels":labels,"image_mask":imasks,"target_mask":tmasks})
     df.to_csv(os.path.join(save.csv),index=False)
         
