@@ -248,10 +248,10 @@ def createWords(iden,
                                     If None is provided: 
                                         Random combinations of graphemes will be provided 
                                         and num_samples data will created at random (default:100000)
-            
+            num_samples     :       number of data to be created (default:100000)
             **THESE ARGS ONLY WORK FOR dictionary=None case** 
             valid_graphemes :       list of graphemes that can be used to create a randomized dictionary 
-            num_samples     :       number of data to be created if no dictionary is provided
+             
             dict_max_len    :       the maximum length of data for randomized dictionary
             dict_min_len    :       the minimum length of data for randomized dictionary
     '''
@@ -280,6 +280,9 @@ def createWords(iden,
     # handle dict
     if dictionary is None:
         dictionary=createRandomDictionary(valid_graphemes,dict_max_len,dict_min_len,num_samples)
+    else:
+        dictionary=dictionary.sample(frac=1)
+        dictionary=dictionary.head(num_samples)
     # save data
     saveDictionary(dictionary=dictionary,
                    compdf=df,

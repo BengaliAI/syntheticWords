@@ -114,6 +114,7 @@ class DataSet(object):
                 assert "word" in df.columns,f"word column not found:{csv}"
                 assert "graphemes" in df.columns,f"graphemes column not found:{csv}"
                 df.graphemes=df.graphemes.progress_apply(lambda x: literal_eval(x))
+                df= df.sample(frac=1)
             else:    
                 assert "filename" in df.columns,f"filename column not found:{csv}"
                 assert "label" in df.columns,f"label column not found:{csv}"

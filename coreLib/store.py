@@ -2,6 +2,10 @@
 '''
     @author:  MD. Nazmuddoha Ansary
 '''
+# @TODO: 
+# add mask generation while storing
+# handle data.csv
+
 from __future__ import print_function
 from coreLib.utils import LOG_INFO
 #---------------------------------------------------------------
