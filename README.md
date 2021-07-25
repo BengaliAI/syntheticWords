@@ -119,6 +119,15 @@ LOG     :IMPORTANT: PATH TO USE FOR tools/process.py:/media/ansary/DriveData/Wor
 Example Execution
 LOG     :IMPORTANT: PATH TO USE FOR tools/process.py:/media/ansary/DriveData/Work/bengalAI/datasets/Recognition/bs
 ```
+## BN-HTRd
+* download **Dataset.zip**  from  [**BN-HTRd: A Benchmark Dataset for Document Level Offline Bangla Handwritten Text Recognition (HTR)**](https://data.mendeley.com/datasets/743k6dm543/1)
+* unzip the file: **fix permission issues with chmod**
+* follow instruction in **datasets/bn_htr.ipynb**
+* keep a track of the path printed at the end of execution
+
+```python
+Example Execution
+LOG     :IMPORTANT: PATH TO USE FOR tools/process.py:/media/ansary/DriveData/Work/bengalAI/datasets/Recognition/bh
 
 
 
