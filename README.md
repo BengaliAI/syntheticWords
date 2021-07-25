@@ -31,7 +31,7 @@ OR use conda-
 
 
 
-# Synthetic words
+# Datasets
 ## Bangla Synthetic Dataset
 * For creating **synthetic bangla (numbers and letters)**,the following datasets are used:
     * The bangla **graphemes** dataset is taken from [here](https://www.kaggle.com/pestipeti/bengali-quick-eda/#data). 
@@ -47,7 +47,7 @@ OR use conda-
        ├── graphemes
        └── numbers
 ```
-* To create the dataset execute **data_banglaSynth.py**
+* To create the dataset execute **scripts/data_banglaSynth.py**
 
 ```python
     usage: Recognizer Training: Bangla Synthetic (numbers and graphemes) Dataset Creating Script [-h] [--img_height IMG_HEIGHT] [--pad_height PAD_HEIGHT] [--img_width IMG_WIDTH] [--num_samples NUM_SAMPLES]
@@ -98,6 +98,16 @@ OR use conda-
 * **data.csv** contains the following columns: filename,labels,image_mask,target_mask. Where labels indicate grapheme components. The **_mask** data can be used for attention based models (like [robust scanner](https://arxiv.org/abs/2007.07542))
 * **targets** folder will be used for **font-face modifier model**
 * any type of **cnn-lstm-ctc** model data can be created from the generated dataset
+
+## Bangla Writing
+* only download the **converted.zip** from  [**BanglaWriting: A multi-purpose offline Bangla handwriting dataset**](https://data.mendeley.com/datasets/r43wkvdk4w/1)
+* unzip the file
+* follow instruction in **datasets/bangla_writing.ipynb**
+* keep a track of the path printed at the end of execution
+```python
+Example Execution
+LOG     :IMPORTANT: PATH TO USE FOR tools/process.py:/media/ansary/DriveData/Work/bengalAI/datasets/Recognition/bw
+```
 
 # References/Tools
 

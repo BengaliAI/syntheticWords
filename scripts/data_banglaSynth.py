@@ -6,6 +6,9 @@
 #--------------------
 # imports
 #--------------------
+import sys
+sys.path.append('../')
+
 import argparse
 import os 
 import json
@@ -42,7 +45,8 @@ def main(args):
                 pad_height=pad_height,
                 top_exts=ds.bangla.top_exts,
                 bot_exts=ds.bangla.bot_exts,
-                dictionary=ds.bangla.dictionary)
+                dictionary=ds.bangla.dictionary,
+                num_samples=num_samples)
     LOG_INFO("Creating bangla numbers data")
     createWords(iden="bangla.numbers",
                 df=ds.bangla.numbers.df,
@@ -60,7 +64,7 @@ def main(args):
 
     # config 
     config={'banglaSynth':ds.bangla.gvocab,}
-    with open("vocab.json", 'w') as fp:
+    with open("../vocab.json", 'w') as fp:
         json.dump(config, fp,sort_keys=True, indent=4,ensure_ascii=False)
 
     

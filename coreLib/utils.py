@@ -210,42 +210,51 @@ class GraphemeParser(object):
                     'ষ্ক','ষ্ট','ষ্ঠ','ষ্ণ','ষ্প','ষ্ফ','ষ্ম','স','স্ক','স্ট','স্ত','স্থ','স্ন','স্প','স্ফ','স্ব','স্ম','স্ল','স্স','হ',
                     'হ্ন','হ্ব','হ্ম','হ্ল','ৎ','ড়','ঢ়','য়']
 
-        
+        self.punctuations           =   ['!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+',
+                                        ',', '-', '.', '/', ':', ':-', ';', '<', '=', '>', '?', 
+                                        '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~', '।', '—', '’', '√']
+
+        self.numbers                =    ['০','১','২','৩','৪','৫','৬','৭','৮','৯']
+        self.ignore                 =   self.punctuations+self.numbers
+
 
     def word2grapheme(self,word):
         graphemes = []
         grapheme = ''
         i = 0
         while i < len(word):
-            grapheme += (word[i])
-            # print(word[i], grapheme, graphemes)
-            # deciding if the grapheme has ended
-            if word[i] in ['\u200d', '্']:
-                # these denote the grapheme is contnuing
-                pass
-            elif word[i] == 'ঁ':  
-                # 'ঁ' always stays at the end
-                graphemes.append(grapheme)
-                grapheme = ''
-            elif word[i] in list(self.roots) + ['়']:
-                # root is generally followed by the diacritics
-                # if there are trailing diacritics, don't end it
-                if i + 1 == len(word):
-                    graphemes.append(grapheme)
-                elif word[i + 1] not in ['্', '\u200d', 'ঁ', '়'] + list(self.vds):
-                    # if there are no trailing diacritics end it
+            if word[i] in self.ignore:
+                graphemes.append(word[i])
+            else:
+                grapheme += (word[i])
+                # print(word[i], grapheme, graphemes)
+                # deciding if the grapheme has ended
+                if word[i] in ['\u200d', '্']:
+                    # these denote the grapheme is contnuing
+                    pass
+                elif word[i] == 'ঁ':  
+                    # 'ঁ' always stays at the end
                     graphemes.append(grapheme)
                     grapheme = ''
+                elif word[i] in list(self.roots) + ['়']:
+                    # root is generally followed by the diacritics
+                    # if there are trailing diacritics, don't end it
+                    if i + 1 == len(word):
+                        graphemes.append(grapheme)
+                    elif word[i + 1] not in ['্', '\u200d', 'ঁ', '়'] + list(self.vds):
+                        # if there are no trailing diacritics end it
+                        graphemes.append(grapheme)
+                        grapheme = ''
 
-            elif word[i] in self.vds:
-                # if the current character is a vowel diacritic
-                # end it if there's no trailing 'ঁ' + diacritics
-                # Note: vowel diacritics are always placed after consonants
-                if i + 1 == len(word):
-                    graphemes.append(grapheme)
-                elif word[i + 1] not in ['ঁ'] + list(self.vds):
-                    graphemes.append(grapheme)
-                    grapheme = ''
+                elif word[i] in self.vds:
+                    # if the current character is a vowel diacritic
+                    # end it if there's no trailing 'ঁ' + diacritics
+                    # Note: vowel diacritics are always placed after consonants
+                    if i + 1 == len(word):
+                        graphemes.append(grapheme)
+                    elif word[i + 1] not in ['ঁ'] + list(self.vds):
+                        graphemes.append(grapheme)
+                        grapheme = ''
 
             i = i + 1
             # Note: df_cd's are constructed by df_root + '্'
