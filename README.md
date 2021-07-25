@@ -2,7 +2,7 @@
 # synthetic words
 
 ```python
-Version: 0.1.0     
+Version: 0.1.1     
 ```
 ### **Related resources**:
 
@@ -149,6 +149,24 @@ LOG     :IMPORTANT: PATH TO USE FOR tools/process.py:/media/ansary/DriveData/Wor
 ```
 ["া","্বা","্ল"], source: bw
 ["ভঁে"], source: bs
+```
+* processing any dataset also increaes the gvocab. 
+* Executing **tools/process.py** (change directory in error case```cd tools```)
+```python
+usage: Processing Dataset Script [-h] [--img_height IMG_HEIGHT] [--img_width IMG_WIDTH] data_path save_path iden
+
+positional arguments:
+  data_path             Path of the source data folder for any naturally writen images/data.csv pair dataset
+  save_path             Path of the directory to save the processed dataset
+  iden                  identifier of the dataset
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --img_height IMG_HEIGHT
+                        height for each grapheme: default=64
+  --img_width IMG_WIDTH
+                        width dimension of word images: default=512
+
 ```
 
 # References/Tools
