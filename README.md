@@ -128,8 +128,28 @@ LOG     :IMPORTANT: PATH TO USE FOR tools/process.py:/media/ansary/DriveData/Wor
 ```python
 Example Execution
 LOG     :IMPORTANT: PATH TO USE FOR tools/process.py:/media/ansary/DriveData/Work/bengalAI/datasets/Recognition/bh
+```
+
+**NOTES**:
+* The outputs of Bangla Writing, Boise State and BN-HTRd notebooks are considered **source data** and can be found [here](https://www.kaggle.com/nazmuddhohaansary/recognizer-source)
+* These outputs needs to be processed to match the format of synthetic data.
+* Each notebook ultimately creates the following structe:
+
+```python
+    ├── savepath
+       ├── bX
+            ├── images
+            ├── data.csv
+```    
 
 
+### Processing (Natrual Datasets)
+* For processing the **images**/**data.csv** pairs saved in End of execution paths from the notebooks, use **tools/process.py**
+* some data with garbage graphemes are dropped via manual inspection:
+```
+["া","্বা","্ল"], source: bw
+["ভঁে"], source: bs
+```
 
 # References/Tools
 

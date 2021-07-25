@@ -264,7 +264,7 @@ def createWords(iden,
     # save_paths
     class save:    
         img=create_dir(save_dir,"images")
-        tgt=create_dir(save_dir,"targtes")
+        tgt=create_dir(save_dir,"targets")
         csv=os.path.join(save_dir,"data.csv")
     # font 
     font=PIL.ImageFont.truetype(font_path, size=comp_dim)

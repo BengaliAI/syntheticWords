@@ -11,7 +11,7 @@ from termcolor import colored
 import os 
 import cv2 
 import numpy as np
-
+from tqdm import tqdm
 #---------------------------------------------------------------
 def LOG_INFO(msg,mcolor='blue'):
     '''
@@ -153,7 +153,7 @@ def extend_vocab(symbol_lists,curr_vocab):
             curr_vocab      :   current vocab
     '''
     vocab=[]
-    for symbol_list in symbol_lists:
+    for symbol_list in tqdm(symbol_lists):
             vocab+=symbol_list
     vocab=sorted(list(set(vocab)))
     
