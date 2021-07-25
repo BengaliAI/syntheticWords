@@ -104,10 +104,23 @@ OR use conda-
 * unzip the file
 * follow instruction in **datasets/bangla_writing.ipynb**
 * keep a track of the path printed at the end of execution
+
 ```python
 Example Execution
 LOG     :IMPORTANT: PATH TO USE FOR tools/process.py:/media/ansary/DriveData/Work/bengalAI/datasets/Recognition/bw
 ```
+## Boise State
+* download **Boise_State_Bangla_Handwriting_Dataset_20200228.zip**  from  [**Boise State Bangla Handwriting Dataset**](https://scholarworks.boisestate.edu/saipl/1/)
+* unzip the file: **fix zip issues with zip -FFv if needed**
+* follow instruction in **datasets/boise_state.ipynb**
+* keep a track of the path printed at the end of execution
+
+```python
+Example Execution
+LOG     :IMPORTANT: PATH TO USE FOR tools/process.py:/media/ansary/DriveData/Work/bengalAI/datasets/Recognition/bs
+```
+
+
 
 # References/Tools
 
