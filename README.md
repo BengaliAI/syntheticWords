@@ -169,6 +169,24 @@ optional arguments:
 
 ```
 
+### tfrecords (from processed datasets)
+* Convert Processed Dataset to tfrecords
+* Executing **tools/record.py** (change directory in error case```cd tools```)
+```python
+usage: Script for Creating tfrecords [-h] [--img_height IMG_HEIGHT] [--img_width IMG_WIDTH] data_path save_path iden
+
+positional arguments:
+  data_path             Path of the processed data folder . Should hold images,targets and data.csv
+  save_path             Path of the directory to save tfrecords
+  iden                  identifier of the dataset
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --img_height IMG_HEIGHT
+                        height for each grapheme: default=64
+  --img_width IMG_WIDTH
+                        width dimension of word images: default=512
+```
 # References/Tools
 
 * [word2grapheme](https://www.kaggle.com/reasat/extract-word-image-and-label) (@author: [Tahsin Reasat](https://www.kaggle.com/reasat))
