@@ -94,7 +94,7 @@ OR use conda-
             ├── data.csv
 ```
 * a **vocab.json** file will be created in the working directory. This will be used to map **unicode and grapheme level** labeling along with corresponding **data.csv**
-* As the datasets are added further (future), this vocab.json will change holding the "banglaSynth" vocabulary as the base case.              
+* As the datasets are added further, this vocab.json will change holding the "gvocab" vocabulary as the base case.              
 * **data.csv** contains the following columns: filename,labels,image_mask,target_mask. Where labels indicate grapheme components. The **_mask** data can be used for attention based models (like [robust scanner](https://arxiv.org/abs/2007.07542))
 * **targets** folder will be used for **font-face modifier model**
 * any type of **cnn-lstm-ctc** model data can be created from the generated dataset
@@ -168,6 +168,9 @@ optional arguments:
                         width dimension of word images: default=512
 
 ```
+* at the end of processing all the datasets execute **scripts/extend_vocab.py**
+
+**THE PROCESSED DATASET IS AVAILABLE [HERE](https://www.kaggle.com/nazmuddhohaansary/recognizer-processed)**
 
 ### tfrecords (from processed datasets)
 * Convert Processed Dataset to tfrecords
