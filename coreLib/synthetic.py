@@ -210,7 +210,78 @@ def saveDictionary(dictionary,
             LOG_INFO(e)
     df=pd.DataFrame({"filename":filename,"labels":labels,"image_mask":imasks,"target_mask":tmasks})
     df.to_csv(os.path.join(save.csv),index=False)
-        
+
+def saveFontFacedDictionary(dictionary,
+                            all_fonts, 
+                            save,
+                            img_dim, 
+                            font,
+                            comp_dim):
+    '''
+        saves a dictionary data with img tgt and data.csv with grapheme labels
+        args:
+            dictionary      :       the dictionary to create img and tgt
+            all_fonts       :       path for all fonts 
+            save            :       save class:
+                                        img
+                                        tgt
+                                        csv
+            img_dim         :       (img_height,img_width) tuple for final word image
+            font            :       font to use for target
+            comp_dim        :       component height base
+    '''
+    # dataframe vars
+    filename=[]
+    labels=[]
+    imasks=[]
+    tmasks=[]
+    # loop
+    for idx in tqdm(range(len(dictionary))):
+        try:
+            comps=dictionary.iloc[idx,1]
+            
+            # resolution based font
+            image_font_path=random.choice(all_fonts)
+            res=random.choice(["low","mid"])
+            if res=="low":
+                image_font_size=comp_dim//4
+            elif res=="mid":
+                image_font_size=comp_dim//2
+            image_font=font=PIL.ImageFont.truetype(image_font_path, size=image_font_size)
+            # image            
+            img=createTgtFromComps(font=image_font,
+                                   comps=comps,
+                                   min_dim=image_font_size)
+
+            # resize (heigh based)
+            _h,_w=img.shape 
+            _width= int(comp_dim* _w/_h) 
+            img=cv2.resize(img,(_width,comp_dim),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
+            
+            # target
+            tgt=createTgtFromComps(font=font,
+                                comps=comps,
+                                min_dim=comp_dim)
+
+            # correct padding
+            img,imask=correctPadding(img,img_dim,ptype="left")
+            tgt,tmask=correctPadding(tgt,img_dim,ptype="left")
+            # save
+            fname=f"{idx}.png"
+            cv2.imwrite(os.path.join(save.img,fname),img)
+            cv2.imwrite(os.path.join(save.tgt,fname),tgt)
+            filename.append(fname)
+            labels.append(comps)
+            imasks.append(imask)
+            tmasks.append(tmask)
+        except Exception as e:
+            LOG_INFO(e)
+    df=pd.DataFrame({"filename":filename,"labels":labels,"image_mask":imasks,"target_mask":tmasks})
+    df.to_csv(os.path.join(save.csv),index=False)
+
+
+
+
 #--------------------
 # ops
 #--------------------
@@ -294,3 +365,53 @@ def createWords(iden,
                    pad=pad,
                    font=font,
                    comp_dim=comp_dim)
+
+
+def createFontFacedWords(iden,
+                        save_dir,
+                        all_fonts,
+                        font_path,
+                        img_dim,
+                        comp_dim,
+                        valid_graphemes,
+                        num_samples=100000,
+                        dict_max_len=10,
+                        dict_min_len=1):
+    '''
+        creates: 
+            * handwriten word image
+            * fontspace target image
+            * a dataframe/csv that holds grapheme level groundtruth
+        args:
+            iden            :       identifier of the dataset
+            save_dir        :       the directory to save the outputs
+            all_fonts       :       all the available fonts
+            font_path       :       the path of the font to be used for target 
+            img_dim         :       (img_height,img_width) tuple for final word image
+            comp_dim        :       min component height for each grapheme image
+            num_samples     :       number of data to be created (default:100000)
+            valid_graphemes :       list of graphemes that can be used to create a randomized dictionary  
+            dict_max_len    :       the maximum length of data for randomized dictionary
+            dict_min_len    :       the minimum length of data for randomized dictionary
+    '''
+    #---------------
+    # processing
+    #---------------
+    save_dir=create_dir(save_dir,iden)
+    # save_paths
+    class save:    
+        img=create_dir(save_dir,"images")
+        tgt=create_dir(save_dir,"targets")
+        csv=os.path.join(save_dir,"data.csv")
+    # font 
+    font=PIL.ImageFont.truetype(font_path, size=comp_dim)
+
+    dictionary=createRandomDictionary(valid_graphemes,dict_max_len,dict_min_len,num_samples)
+    
+    # save data
+    saveFontFacedDictionary(dictionary=dictionary,
+                            all_fonts=all_fonts,
+                            save=save,
+                            img_dim=img_dim,
+                            font=font,
+                            comp_dim=comp_dim)

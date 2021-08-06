@@ -52,6 +52,8 @@ class DataSet(object):
             top_exts               =   ['ই', 'ঈ', 'উ', 'ঊ', 'ঐ','ঔ','ট', 'ঠ',' ি', 'ী', 'ৈ', 'ৌ','ঁ','র্']
 
             bot_exts               =  ['ু', 'ূ', 'ৃ',]
+            
+            sel_puntcs             =   [',', '-', '.', '/', ':','(', ')']
 
             class graphemes:
                 dir   =   os.path.join(data_dir,"bangla","graphemes")
@@ -63,12 +65,16 @@ class DataSet(object):
 
             dictionary_csv  =   os.path.join(data_dir,"bangla","dictionary.csv")    
             font            =   os.path.join(data_dir,"bangla","fonts","Bangla.ttf")
-            all_fonts       =   [fpath for fpath in glob(os.path.join(data_dir,"bangla","fonts","*.ttf"))]
+            all_fonts       =   [fpath for fpath in glob(os.path.join(data_dir,"bangla","fonts","*.ttf")) if "ANSI" not in fpath]
 
 
         class english:
             letters                 =  list(string.ascii_lowercase)
             number_values           =  [str(i) for i in range(10)]
+            punctuations            =   ['!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+',
+                                        ',', '-', '.', '/', ':', ':-', ';', '<', '=', '>', '?', 
+                                        '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~', '।', '—', '’', '√']
+            sel_puntcs              =   [',', '-', '.', '/', ':','(', ')']
             class graphemes:
                 dir   =   os.path.join(data_dir,"english","graphemes")
                 csv   =   os.path.join(data_dir,"english","graphemes.csv")
@@ -100,7 +106,9 @@ class DataSet(object):
             self.__checkDataValidity(self.english.numbers,"english.numbers")
             
             # vocab graphemes
-            self.english.vocab=[""]+self.english.number_values+self.english.letters
+            self.english.gvocab=[""]+self.english.number_values+self.english.letters+self.english.punctuations
+            self.english.ffvocab=self.english.number_values+self.english.letters+self.english.sel_puntcs
+            
         
         else:
             # get df
@@ -123,6 +131,7 @@ class DataSet(object):
             
             # vocab graphemes
             self.bangla.gvocab=[""]+self.bangla.punctuations+self.bangla.number_values+self.known_graphemes
+            self.bangla.ffvocab=self.bangla.sel_puntcs+self.bangla.number_values+self.known_graphemes
 
 
 
