@@ -121,7 +121,10 @@ def createTgtFromComps(font,comps,min_dim):
     draw.text(xy=(0, 0), text="".join(comps), fill=255, font=font)
     # reverse
     tgt=np.array(image)
-    tgt=stripPads(tgt,0)
+    idx=np.where(tgt>0)
+    y_min,y_max,x_min,x_max = np.min(idx[0]), np.max(idx[0]), np.min(idx[1]), np.max(idx[1])
+    tgt=tgt[y_min:y_max,x_min:x_max]
+    #tgt=stripPads(tgt,0)
     tgt=255-tgt
     return tgt    
     
