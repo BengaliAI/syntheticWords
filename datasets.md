@@ -88,3 +88,7 @@ are considered **source data** and can be found [here](https://www.kaggle.com/na
 * processing any dataset also increaes the gvocab. 
 
 **THE COMBINED PROCESSED DATASET IS AVAILABLE [HERE](https://www.kaggle.com/nazmuddhohaansary/recognizer-processed)**
+
+# used datasets:
+* **crnn tfrecords dataset** : https://www.kaggle.com/nazmuddhohaansary/pgvu-crnn-ctc-tfrecords
+* **evaluation dataset**     : https://www.kaggle.com/nazmuddhohaansary/pgvu-eval-dataset (test subset of processed data)  
