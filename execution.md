@@ -58,7 +58,7 @@
 
 #  **tools/process.py** 
 
-* For processing the **images**,**targets** and **data.csv** saved in End of execution paths from the datasets notebooks
+* For processing the **images** and **data.csv** saved in End of execution paths from the datasets notebooks
 * change directory: ```cd tools```
 * execution params:
 

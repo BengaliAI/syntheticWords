@@ -138,7 +138,6 @@ def store(cfg):
     '''
         stores tfrecords based on given config
     '''
-    LOG_INFO(args.use_font)
     assert cfg.record_type in ['CRNN','ROBUSTSCANNER','ABINET'],"Wrong Record type:['CRNN','ROBUSTSCANNER','ABINET']"
     save_path        =   create_dir(cfg.save_path,"tfrecords")
     save_path        =   create_dir(save_path,cfg.iden)
@@ -207,9 +206,9 @@ if __name__=="__main__":
         parsing and execution
     '''
     parser = argparse.ArgumentParser("Script for Creating tfrecords")
-    parser.add_argument("data_path",                                    help    ="Path of the processed data folder . Should hold images,targets and data.csv ")
+    parser.add_argument("data_path",                                    help    ="Path of the processed data folder that contains images,targets and data.csv")
     parser.add_argument("save_path",                                    help    ="Path of the directory to save tfrecords")
-    parser.add_argument("iden",                                         help    ="identifier of the dataset")
+    parser.add_argument("iden",                                         help    ="identifier of the dataset.")
     parser.add_argument("record_type",                                  help    ="specific record type to create. Availabe['CRNN','ROBUSTSCANNER','ABINET'] ")
     parser.add_argument("--img_height", required=False, default=64,     help    ="height for each grapheme: default=64")
     parser.add_argument("--img_width",  required=False, default=512,    help    ="width dimension of word images: default=512")

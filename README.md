@@ -51,7 +51,19 @@ The series of execution is as follows
 4. **datasets/bangla_writing.ipynb**
 5. **tools/process.py** x 3 : execute for all 3 natrual written datasets(bw,bs,bh)
 6. **scripts/extend_vocab.py**
+7. **tools/record.py**  x 8 : to create tfrecords for the following datasets
 
+```
+    bangla.graphemes
+    bangla.numbers
+    bw/train
+    bw/test
+    bs/train
+    bs/test
+    bh/train
+    bh/test
+    
+```
 **se execution.md for notes and specific instructions** 
 
 
