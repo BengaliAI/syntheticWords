@@ -148,18 +148,16 @@ def store(cfg):
         create_mask=False
         start_end=0
     elif cfg.record_type=="ROBUSTSCANNER":
-        c_start_end=len(cvocab)+1
-        c_pad_value=c_start_end+1
+        c_start_end=len(cvocab)
+        c_pad_value=len(cvocab)+1
         
-        g_start_end=len(gvocab)+1
-        g_pad_value=g_start_end+1
+        g_start_end=len(gvocab)
+        g_pad_value=len(gvocab)+1
         
         create_mask=True
         pad_len    =80
         LOG_INFO(f"Grapheme Pad Value:{g_pad_value}")
         LOG_INFO(f"Unicode Pad Value:{c_pad_value}")
-        LOG_INFO(f"Unicode class:{c_pad_value+1}")
-        LOG_INFO(f"Grapheme class:{g_pad_value+1}")
         
     else:
         raise NotImplementedError 
@@ -190,8 +188,8 @@ def store(cfg):
         df["glabel"]=df.glabel.progress_apply(lambda x: pad_encoded_label(x,cfg.max_glen,pad_value))
         df["clabel"]=df.clabel.progress_apply(lambda x: pad_encoded_label(x,cfg.max_clen,pad_value))
     elif cfg.record_type=="ROBUSTSCANNER":
-        df["glabel"]=df.labels.progress_apply(lambda x: get_encoded_label(x,gvocab))
-        df["clabel"]=df.chars.progress_apply(lambda x: get_encoded_label(x,cvocab))
+        df["glabel"]=df.labels.progress_apply(lambda x: get_encoded_label(x,gvocab[1:]))
+        df["clabel"]=df.chars.progress_apply(lambda x: get_encoded_label(x,cvocab[1:]))
         # add tokens
         df["glabel"]=df.glabel.progress_apply(lambda x: [g_start_end]+x+[g_start_end])
         df["clabel"]=df.clabel.progress_apply(lambda x: [c_start_end]+x+[c_start_end])
