@@ -60,7 +60,6 @@ def toTfrecord(df,
             rnum    :   record number
             rec_path:   save_path
             mask_dim:   the dimension of the mask
-            use_font:   store fontfaced images 
     '''
     tfrecord_name=f'{rnum}.tfrecord'
     tfrecord_path=os.path.join(rec_path,tfrecord_name) 
@@ -98,22 +97,6 @@ def toTfrecord(df,
             example= tf.train.Example(features=features)
             serialized=example.SerializeToString()
             writer.write(serialized)  
-
-
-#--------------------
-# parsing util
-#--------------------
-
-def str2bool(v):
-    if isinstance(v, bool):
-        return v
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
-
 #--------------------
 # main
 #--------------------
@@ -138,7 +121,7 @@ def store(cfg):
         g_pad_value=len(gvocab)+1
         
         create_mask=True
-        pad_len    =80
+        pad_len    =40
         LOG_INFO(f"Grapheme Pad Value:{g_pad_value}")
         LOG_INFO(f"Unicode Pad Value:{c_pad_value}")
         
@@ -184,7 +167,6 @@ def store(cfg):
         # mask
         df["image_mask"]=df["image_mask"].progress_apply(lambda x:x if x > 0 else cfg.img_width)
         df["image_mask"]=df["image_mask"].progress_apply(lambda x: math.ceil((x/cfg.img_width)*(cfg.img_width//cfg.factor)))
-        
         mask_dim=(cfg.img_height//cfg.factor,cfg.img_width//cfg.factor)
     else:
         df=df[["img_path","glabel","clabel"]]
@@ -197,7 +179,7 @@ def store(cfg):
     for idx in tqdm(range(0,len(df),cfg.tf_size)):
         _df        =   df.iloc[idx:idx+cfg.tf_size]  
         rnum       =   idx//cfg.tf_size
-        toTfrecord(_df,rnum,save_path,mask_dim)
+        toTfrecord(_df,rnum,save_path,mask_dim,cfg.use_font)
 #-----------------------------------------------------------------------------------
 
 if __name__=="__main__":
@@ -217,7 +199,6 @@ if __name__=="__main__":
     parser.add_argument("--factor",     required=False, default=32,     help    ="downscale factor for attention mask(used in robust scanner and abinet): default=32")
     
     
-    
     args = parser.parse_args()
 
     class cfg:
@@ -231,6 +212,7 @@ if __name__=="__main__":
         max_clen    =   int(args.max_clen)
         tf_size     =   int(args.tf_size)
         factor      =   int(args.factor)
+        use_font    =   args.use_font
         
     store(cfg)
     

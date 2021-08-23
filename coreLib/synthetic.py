@@ -11,7 +11,7 @@ import numpy as np
 import random
 import pandas as pd 
 from tqdm import tqdm
-from .utils import LOG_INFO, correctPadding,create_dir,stripPads
+from .utils import LOG_INFO, correctPadding,create_dir
 import PIL
 import PIL.Image , PIL.ImageDraw , PIL.ImageFont 
 tqdm.pandas()
@@ -103,7 +103,7 @@ def createImgFromComps(df,comps,pad):
     return img 
 
 
-def createTgtFromComps(font,comps):
+def createFontImageFromComps(font,comps):
     '''
         creates font-space target images
         args:
@@ -118,13 +118,12 @@ def createTgtFromComps(font,comps):
     draw = PIL.ImageDraw.Draw(image)
     draw.text(xy=(0, 0), text="".join(comps), fill=255, font=font)
     # reverse
-    tgt=np.array(image)
-    idx=np.where(tgt>0)
+    img=np.array(image)
+    idx=np.where(img>0)
     y_min,y_max,x_min,x_max = np.min(idx[0]), np.max(idx[0]), np.min(idx[1]), np.max(idx[1])
-    tgt=tgt[y_min:y_max,x_min:x_max]
-    #tgt=stripPads(tgt,0)
-    tgt=255-tgt
-    return tgt    
+    img=img[y_min:y_max,x_min:x_max]
+    img=255-img
+    return img    
     
 
 
@@ -143,7 +142,8 @@ def createSyntheticData(iden,
                         top_exts,
                         bot_exts,
                         dictionary,
-                        sample_per_word=100):
+                        sample_per_word=100,
+                        pad_type="left"):
     '''
         creates: 
             * handwriten word image
@@ -164,6 +164,7 @@ def createSyntheticData(iden,
             dictionary      :       if a dictionary is to be used, then pass the dictionary. 
                                     The dictionary dataframe should contain "word" and "graphemes"
             sample_per_word :       number of samples per word
+            pad_type        :       wheather to do central padding or left padding
                                 
     '''
     #---------------
@@ -193,33 +194,37 @@ def createSyntheticData(iden,
     filename=[]
     labels=[]
     imasks=[]
+    fiden=0
     # loop
     for idx in tqdm(range(len(dictionary))):
         try:
             comps=dictionary.iloc[idx,1]
+            # font images
             for font_path in fonts:
                 font=PIL.ImageFont.truetype(font_path,comp_dim)
-
-            # image
-            img=createImgFromComps(df=compdf,
-                                comps=comps,
-                                pad=pad)
-            # target
-            tgt=createTgtFromComps(font=font,
-                                comps=comps,
-                                min_dim=comp_dim)
-
-            # correct padding
-            img,imask=correctPadding(img,img_dim,ptype="left")
-            tgt,tmask=correctPadding(tgt,img_dim,ptype="left")
-            # save
-            fname=f"{idx}.png"
-            cv2.imwrite(os.path.join(save.img,fname),img)
-            cv2.imwrite(os.path.join(save.tgt,fname),tgt)
-            filename.append(fname)
-            labels.append(comps)
-            imasks.append(imask)
-            tmasks.append(tmask)
+                img=createFontImageFromComps(font,comps)
+                # correct padding
+                img,imask=correctPadding(img,img_dim,ptype=pad_type)
+                # save
+                fname=f"{fiden}.png"
+                cv2.imwrite(os.path.join(save.img,fname),img)
+                filename.append(fname)
+                labels.append(comps)
+                imasks.append(imask)
+                fiden+=1    
+            # hand-written images
+            for _ in range(sample_per_word-len(fonts)):
+                # image
+                img=createImgFromComps(df=df,comps=comps,pad=pad)
+                # correct padding
+                img,imask=correctPadding(img,img_dim,ptype=pad_type)
+                # save
+                fname=f"{fiden}.png"
+                cv2.imwrite(os.path.join(save.img,fname),img)
+                filename.append(fname)
+                labels.append(comps)
+                imasks.append(imask)
+                fiden+=1
         except Exception as e:
             LOG_INFO(e)
     df=pd.DataFrame({"filename":filename,"labels":labels,"image_mask":imasks})

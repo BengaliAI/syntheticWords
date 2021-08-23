@@ -29,13 +29,13 @@ optional arguments:
 * execution params:
 
 ```python
-usage: Script for Creating tfrecords [-h] [--img_height IMG_HEIGHT] [--img_width IMG_WIDTH] [--max_glen MAX_GLEN] [--max_clen MAX_CLEN] [--tf_size TF_SIZE] [--factor FACTOR] [--use_font USE_FONT]
+usage: Script for Creating tfrecords [-h] [--img_height IMG_HEIGHT] [--img_width IMG_WIDTH] [--max_glen MAX_GLEN] [--max_clen MAX_CLEN] [--tf_size TF_SIZE] [--factor FACTOR]
                                      data_path save_path iden record_type
 
 positional arguments:
-  data_path             Path of the processed data folder . Should hold images,targets and data.csv
+  data_path             Path of the processed data folder that contains images,targets and data.csv
   save_path             Path of the directory to save tfrecords
-  iden                  identifier of the dataset
+  iden                  identifier of the dataset.
   record_type           specific record type to create. Availabe['CRNN','ROBUSTSCANNER','ABINET']
 
 optional arguments:
@@ -48,6 +48,30 @@ optional arguments:
   --max_clen MAX_CLEN   maximum length of unicode level data to keep: default=62
   --tf_size TF_SIZE     number of data to keep in one record: default=1024
   --factor FACTOR       downscale factor for attention mask(used in robust scanner and abinet): default=32
-  --use_font USE_FONT   Stores fontface images: default=False
 
+```
+
+# **scripts/data_synth.py**
+* creates synthetic data based on dictionay created from  **datasets/synthetic.ipynb**
+
+```python
+usage: Recognizer Training: Bangla Synthetic (numbers and graphemes) Dataset Creating Script [-h] [--img_height IMG_HEIGHT] [--pad_height PAD_HEIGHT] [--img_width IMG_WIDTH] [--num_samples NUM_SAMPLES]
+                                                                                             [--pad_type PAD_TYPE]
+                                                                                             data_path save_path
+
+positional arguments:
+  data_path             Path of the source data folder
+  save_path             Path of the directory to save the dataset
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --img_height IMG_HEIGHT
+                        height for each grapheme: default=64
+  --pad_height PAD_HEIGHT
+                        pad height for each grapheme for alignment correction: default=20
+  --img_width IMG_WIDTH
+                        width dimension of word images: default=512
+  --num_samples NUM_SAMPLES
+                        number of samples to create when using dictionary:default=100
+  --pad_type PAD_TYPE   type of padding to use(for CRNN use central , for ROBUSTSCANNER use left): default=left
 ```

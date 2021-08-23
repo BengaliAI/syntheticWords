@@ -47,9 +47,11 @@ The series of execution is as follows
 1. **datasets/boise_state.ipynb**
 2. **datasets/bn_htr.ipynb**
 3. **datasets/bangla_writing.ipynb**
-4. **tools/process.py** x 3 : execute for all 3 natrual written datasets(bw,bs,bh)
-5. **scripts/extend_vocab.py**
-6. **tools/record.py**  x 6 : to create tfrecords for the following datasets
+4. **datasets/synthetic.ipynb**
+5. **tools/process.py** x 3 : execute for all 3 natrual written datasets(bw,bs,bh)
+6. **scripts/extend_vocab.py**
+7. **scripts/data_synth.py**
+8. **tools/record.py**  x 7 : to create tfrecords for the following datasets
 
 
 ```
@@ -59,11 +61,11 @@ The series of execution is as follows
     bs/test
     bh/train
     bh/test
-    
+    synth
 ```
-**Alternatively**: modify scripts/XXXX.sh for specific format data and skip step 4 to 6
+**Alternatively**: modify scripts/XXXX.sh for specific format data and skip step 5 to 8
 
-**se execution.md for notes and specific instructions** 
+**see execution.md for notes and specific instructions** 
 
 **Notes**:
 initial vocab:
