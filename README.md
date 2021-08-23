@@ -32,7 +32,7 @@ OR use conda-
 
 # Resources:
 * **vocab.json**        : holder for unicode and grapheme level vocabulary data
-* **scripts(folder)**   : fixed-execution (the execution is for certain purposes) **.py** files
+* **scripts(folder)**   : fixed-execution (the execution is for certain purposes) **.py and .sh** files
 * **tools(folder)**     : **.py** files created with generalized / variable execution purposes
 * **datasets(folder)**  : **.ipynb** files with specific instructions for specific natrual datasets
 * **datasets.md**       : sources and processing instuctions for used datasets  
@@ -48,7 +48,9 @@ The series of execution is as follows
 2. **datasets/bn_htr.ipynb**
 3. **datasets/bangla_writing.ipynb**
 4. **tools/process.py** x 3 : execute for all 3 natrual written datasets(bw,bs,bh)
-5. **tools/record.py**  x 6 : to create tfrecords for the following datasets
+5. **scripts/extend_vocab.py**
+6. **tools/record.py**  x 6 : to create tfrecords for the following datasets
+
 
 ```
     bw/train
@@ -59,6 +61,8 @@ The series of execution is as follows
     bh/test
     
 ```
+**Alternatively**: modify scripts/XXXX.sh for specific format data and skip step 4 to 6
+
 **se execution.md for notes and specific instructions** 
 
 **Notes**:
@@ -66,7 +70,6 @@ initial vocab:
 
 ```python
 {
-    "cvocab": [""],
     "gvocab": [""]
 }
 ```

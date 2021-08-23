@@ -53,8 +53,7 @@ def _int64_list_feature(value):
 def toTfrecord(df,
               rnum,
               rec_path,
-              mask_dim,
-              use_font):
+              mask_dim):
     '''
         args:
             df      :   the dataframe that contains the information to store
@@ -83,12 +82,6 @@ def toTfrecord(df,
                     'glabel':_int64_list_feature(glabel)
             }
 
-            if use_font:
-                tgt_path=img_path.replace("images","targets")
-                # tgt
-                with(open(tgt_path,'rb')) as fid:
-                    target_png_bytes=fid.read()
-                data['target']=_bytes_feature(target_png_bytes)
             
 
             if mask_dim is not None:
@@ -101,16 +94,6 @@ def toTfrecord(df,
                 imask=[int(i) for i in imask]
                 data['img_mask']=_int64_list_feature(imask)
 
-                if use_font:
-                    tgtw    =df.iloc[idx,4]    
-                    # tgt
-                    tmask=np.zeros(mask_dim)
-                    # valid true format: processing in model
-                    tmask[:,:tgtw]=1
-                    tmask=tmask.flatten().tolist()
-                    tmask=[int(i) for i in tmask]
-                    data['tgt_mask']=_int64_list_feature(tmask)
-            
             features=tf.train.Features(feature=data)
             example= tf.train.Example(features=features)
             serialized=example.SerializeToString()
@@ -167,7 +150,6 @@ def store(cfg):
     #--------------------    
     csv    =   os.path.join(cfg.data_path,"data.csv")
     img    =   os.path.join(cfg.data_path,"images")
-    tgt    =   os.path.join(cfg.data_path,"targets")
     # process data_csv
     df=pd.read_csv(csv)
     # literal eval
@@ -198,18 +180,11 @@ def store(cfg):
         df["clabel"]=df.clabel.progress_apply(lambda x: pad_encoded_label(x,pad_len,c_pad_value))
 
     if create_mask:
-        if cfg.use_font:
-            df=df[["img_path","glabel","clabel","image_mask","target_mask"]]
-        else:
-            df=df[["img_path","glabel","clabel","image_mask"]]
+        df=df[["img_path","glabel","clabel","image_mask"]]
         # mask
         df["image_mask"]=df["image_mask"].progress_apply(lambda x:x if x > 0 else cfg.img_width)
         df["image_mask"]=df["image_mask"].progress_apply(lambda x: math.ceil((x/cfg.img_width)*(cfg.img_width//cfg.factor)))
         
-        if cfg.use_font:
-            df["target_mask"]=df["target_mask"].progress_apply(lambda x:x if x > 0 else cfg.img_width)
-            df["target_mask"]=df["target_mask"].progress_apply(lambda x: math.ceil((x/cfg.img_width)*(cfg.img_width//cfg.factor)))
-
         mask_dim=(cfg.img_height//cfg.factor,cfg.img_width//cfg.factor)
     else:
         df=df[["img_path","glabel","clabel"]]
@@ -222,7 +197,7 @@ def store(cfg):
     for idx in tqdm(range(0,len(df),cfg.tf_size)):
         _df        =   df.iloc[idx:idx+cfg.tf_size]  
         rnum       =   idx//cfg.tf_size
-        toTfrecord(_df,rnum,save_path,mask_dim,cfg.use_font)
+        toTfrecord(_df,rnum,save_path,mask_dim)
 #-----------------------------------------------------------------------------------
 
 if __name__=="__main__":
@@ -240,7 +215,6 @@ if __name__=="__main__":
     parser.add_argument("--max_clen",   required=False, default=62,     help    ="maximum length of unicode level data to keep: default=62")
     parser.add_argument("--tf_size",    required=False, default=1024,   help    ="number of data to keep in one record: default=1024")
     parser.add_argument("--factor",     required=False, default=32,     help    ="downscale factor for attention mask(used in robust scanner and abinet): default=32")
-    parser.add_argument("--use_font",   required=False, default=False,  type=str2bool,help="Stores fontface images: default=False")
     
     
     
@@ -257,7 +231,6 @@ if __name__=="__main__":
         max_clen    =   int(args.max_clen)
         tf_size     =   int(args.tf_size)
         factor      =   int(args.factor)
-        use_font    =   args.use_font
         
     store(cfg)
     

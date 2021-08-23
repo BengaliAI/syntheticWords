@@ -3,7 +3,6 @@
 @author:MD.Nazmuddoha Ansary
 """
 from __future__ import print_function
-from numpy.lib.financial import pv
 #---------------------------------------------------------------
 # imports
 #---------------------------------------------------------------
@@ -421,9 +420,7 @@ class WordCleaner(object):
                 (b) breaks as:['ক', 'ে', 'ন', '্', 'দ', '্', 'র', 'ী', 'য়']
             Example-2:Elif case-2
             (a)রযে়ছে==(b)রয়েছে ->  False
-                (a) breaks as:['র', 'য', 'ে', '়', 'ছ', 'ে']
-                (b) breaks as:['র', 'য়', 'ে', 'ছ', 'ে']
-            Example-3:Otherwise 
+                (a) breaks as:['র', 'য', 'ে', '়', 'ছ', 'ে']echo succeeded
             (a)জ়ন্য==(b)জন্য ->  False
                 (a) breaks as:['জ', '়', 'ন', '্', 'য']
                 (b) breaks as:['জ', 'ন', '্', 'য']

@@ -5,7 +5,7 @@
 * execution params:
 
 ```python
-usage: Processing Dataset Script [-h] [--img_height IMG_HEIGHT] [--img_width IMG_WIDTH] data_path save_path iden
+usage: Processing Dataset Script [-h] [--img_height IMG_HEIGHT] [--img_width IMG_WIDTH] [--ptype PTYPE] data_path save_path iden
 
 positional arguments:
   data_path             Path of the source data folder for any naturally writen images/data.csv pair dataset
@@ -18,6 +18,7 @@ optional arguments:
                         height for each grapheme: default=64
   --img_width IMG_WIDTH
                         width dimension of word images: default=512
+  --ptype PTYPE         type of padding to use(for CRNN use central , for ROBUSTSCANNER use left): default=left
 
 ```
 

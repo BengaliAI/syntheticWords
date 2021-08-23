@@ -19,6 +19,7 @@ from ast import literal_eval
 import PIL
 import PIL.Image , PIL.ImageDraw , PIL.ImageFont 
 from coreLib.utils import LOG_INFO, create_dir,correctPadding,extend_vocab,WordCleaner
+from coreLib.dataset import bangla
 tqdm.pandas()
 #--------------------
 # globals
@@ -102,6 +103,9 @@ def main(args):
         df=pd.read_csv(data_csv)
         df.word=df.word.progress_apply(lambda x: WC.clean(x))
         df.dropna(inplace=True)
+        df.word=df.word.progress_apply(lambda x: x if  set([i for i in x]).issubset(bangla.valid) else None)
+        df.dropna(inplace=True)
+        
         df.graphemes=df.graphemes.progress_apply(lambda x: literal_eval(x))
         df.graphemes=df.graphemes.progress_apply(lambda x: drop_garbage(x))
         df.dropna(inplace=True)
@@ -116,7 +120,6 @@ def main(args):
     class train:
         dir=create_dir(save,"train")
         img=create_dir(dir,"images")
-        
         csv=os.path.join(dir,"data.csv")
         #filename,labels,image_mask,target_mask
     class test:
@@ -153,5 +156,3 @@ if __name__=="__main__":
     parser.add_argument("--ptype",required=False,default="left",help ="type of padding to use(for CRNN use central , for ROBUSTSCANNER use left): default=left")
     args = parser.parse_args()
     main(args)
-    
-    
