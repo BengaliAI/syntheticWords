@@ -1,17 +1,15 @@
 # Bangla Synthetic Dataset
-* For creating **synthetic bangla (numbers and letters)**,the following datasets are used:
-    * The bangla **graphemes** dataset is taken from [here](https://www.kaggle.com/pestipeti/bengali-quick-eda/#data). 
-    * The bangla **numbers** dataset is taken from [here](https://www.kaggle.com/c/numta/data) 
-* A processed version of the dataset can be found [here](https://www.kaggle.com/nazmuddhohaansary/recognizer-source). The folder structre should look as follows
+* The bangla **graphemes** dataset is taken from [here](https://www.kaggle.com/pestipeti/bengali-quick-eda/#data). 
+* A processed version of the dataset can be found [here](https://www.kaggle.com/nazmuddhohaansary/recognizer-source). 
+
+The  **required** folder structre should look as follows
     
 ```python
     ├── bangla
        ├── graphemes.csv
-       ├── numbers.csv
-       ├── dictionary.csv
        ├── fonts
        ├── graphemes
-       └── numbers
+       
 ```
 # Boise State
 * **Boise_State_Bangla_Handwriting_Dataset_20200228.zip**  from  [**Boise State Bangla Handwriting Dataset**](https://scholarworks.boisestate.edu/saipl/1/)
@@ -87,8 +85,9 @@ are considered **source data** and can be found [here](https://www.kaggle.com/na
 ```
 * processing any dataset also increaes the gvocab. 
 
-**THE COMBINED PROCESSED DATASET IS AVAILABLE [HERE](https://www.kaggle.com/nazmuddhohaansary/recognizer-processed)**
+**THE COMBINED PROCESSED DATASET IS AVAILABLE [HERE]()**
 
 # used datasets:
 * **crnn tfrecords dataset** : https://www.kaggle.com/nazmuddhohaansary/pgvu-crnn-ctc-tfrecords
+* **robust scanner tfrecords dataset**: https://www.kaggle.com/nazmuddhohaansary/pgvu-rs-ctc-tfrecords
 * **evaluation dataset**     : https://www.kaggle.com/nazmuddhohaansary/pgvu-eval-dataset (test subset of processed data)  
