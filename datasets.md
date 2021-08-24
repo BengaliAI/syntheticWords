@@ -85,7 +85,7 @@ are considered **source data** and can be found [here](https://www.kaggle.com/na
 ```
 * processing any dataset also increaes the gvocab. 
 
-**THE COMBINED PROCESSED DATASET IS AVAILABLE [HERE]()**
+**THE COMBINED PROCESSED DATASET IS AVAILABLE [HERE](https://www.kaggle.com/nazmuddhohaansary/pgvu-processed-dataset)**
 
 # used datasets:
 * **crnn tfrecords dataset** : https://www.kaggle.com/nazmuddhohaansary/pgvu-crnn-ctc-tfrecords

@@ -137,6 +137,8 @@ def store(cfg):
     df=pd.read_csv(csv)
     # literal eval
     df.labels=df.labels.progress_apply(lambda x: literal_eval(x))
+    df.labels=df.labels.progress_apply(lambda x: x if set([i for i in x]).issubset(gvocab) else None)
+    df.dropna(inplace=True)
     # chars
     df["chars"]=df.labels.progress_apply(lambda x: [i for i in "".join(x)])
     # img paths

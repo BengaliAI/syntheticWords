@@ -9,5 +9,6 @@ python /home/apsisdev/ansary/CODES/syntheticWords/tools/record.py  /home/apsisde
 python /home/apsisdev/ansary/CODES/syntheticWords/tools/record.py  /home/apsisdev/ansary/DATASETS/PRecog/rs/bh/test/ /home/apsisdev/ansary/DATASETS/PRecog/rs/ bh.test  ROBUSTSCANNER && \
 python /home/apsisdev/ansary/CODES/syntheticWords/tools/record.py  /home/apsisdev/ansary/DATASETS/PRecog/rs/bw/train/ /home/apsisdev/ansary/DATASETS/PRecog/rs/ bw.train  ROBUSTSCANNER && \
 python /home/apsisdev/ansary/CODES/syntheticWords/tools/record.py  /home/apsisdev/ansary/DATASETS/PRecog/rs/bs/train/ /home/apsisdev/ansary/DATASETS/PRecog/rs/ bs.train  ROBUSTSCANNER && \
-python /home/apsisdev/ansary/CODES/syntheticWords/tools/record.py  /home/apsisdev/ansary/DATASETS/PRecog/rs/bh/train/ /home/apsisdev/ansary/DATASETS/PRecog/rs/ bh.train  ROBUSTSCANNER
+python /home/apsisdev/ansary/CODES/syntheticWords/tools/record.py  /home/apsisdev/ansary/DATASETS/PRecog/rs/bh/train/ /home/apsisdev/ansary/DATASETS/PRecog/rs/ bh.train  ROBUSTSCANNER && \
+python /home/apsisdev/ansary/CODES/syntheticWords/tools/record.py  /home/apsisdev/ansary/DATASETS/PRecog/rs/synth/ /home/apsisdev/ansary/DATASETS/PRecog/rs/ synth  ROBUSTSCANNER
 echo succeeded

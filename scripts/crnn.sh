@@ -9,5 +9,6 @@ python /home/apsisdev/ansary/CODES/syntheticWords/tools/record.py  /home/apsisde
 python /home/apsisdev/ansary/CODES/syntheticWords/tools/record.py  /home/apsisdev/ansary/DATASETS/PRecog/crnn/bh/test/ /home/apsisdev/ansary/DATASETS/PRecog/crnn/ bh.test CRNN --max_glen 10 --max_clen 20 && \
 python /home/apsisdev/ansary/CODES/syntheticWords/tools/record.py  /home/apsisdev/ansary/DATASETS/PRecog/crnn/bw/train/ /home/apsisdev/ansary/DATASETS/PRecog/crnn/ bw.train CRNN --max_glen 10 --max_clen 20 && \
 python /home/apsisdev/ansary/CODES/syntheticWords/tools/record.py  /home/apsisdev/ansary/DATASETS/PRecog/crnn/bs/train/ /home/apsisdev/ansary/DATASETS/PRecog/crnn/ bs.train CRNN --max_glen 10 --max_clen 20 && \
-python /home/apsisdev/ansary/CODES/syntheticWords/tools/record.py  /home/apsisdev/ansary/DATASETS/PRecog/crnn/bh/train/ /home/apsisdev/ansary/DATASETS/PRecog/crnn/ bh.train CRNN --max_glen 10 --max_clen 20
+python /home/apsisdev/ansary/CODES/syntheticWords/tools/record.py  /home/apsisdev/ansary/DATASETS/PRecog/crnn/bh/train/ /home/apsisdev/ansary/DATASETS/PRecog/crnn/ bh.train CRNN --max_glen 10 --max_clen 20 && \
+python /home/apsisdev/ansary/CODES/syntheticWords/tools/record.py  /home/apsisdev/ansary/DATASETS/PRecog/crnn/synth/ /home/apsisdev/ansary/DATASETS/PRecog/crnn/ synth CRNN --max_glen 10 --max_clen 20
 echo succeeded
