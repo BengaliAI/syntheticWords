@@ -179,7 +179,7 @@ def store(cfg):
     for idx in tqdm(range(0,len(df),cfg.tf_size)):
         _df        =   df.iloc[idx:idx+cfg.tf_size]  
         rnum       =   idx//cfg.tf_size
-        toTfrecord(_df,rnum,save_path,mask_dim,cfg.use_font)
+        toTfrecord(_df,rnum,save_path,mask_dim)
 #-----------------------------------------------------------------------------------
 
 if __name__=="__main__":
@@ -212,7 +212,6 @@ if __name__=="__main__":
         max_clen    =   int(args.max_clen)
         tf_size     =   int(args.tf_size)
         factor      =   int(args.factor)
-        use_font    =   args.use_font
         
     store(cfg)
     

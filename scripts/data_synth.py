@@ -71,7 +71,7 @@ if __name__=="__main__":
     parser.add_argument("--img_height",required=False,default=64,help ="height for each grapheme: default=64")
     parser.add_argument("--pad_height",required=False,default=20,help ="pad height for each grapheme for alignment correction: default=20")
     parser.add_argument("--img_width",required=False,default=512,help ="width dimension of word images: default=512")
-    parser.add_argument("--num_samples",required=False,default=100,help ="number of samples to create when using dictionary:default=100")
+    parser.add_argument("--num_samples",required=False,default=50,help ="number of samples to create when using dictionary:default=50")
     parser.add_argument("--pad_type",required=False,default="left",help ="type of padding to use(for CRNN use central , for ROBUSTSCANNER use left): default=left")
     args = parser.parse_args()
     main(args)
