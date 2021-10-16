@@ -207,6 +207,7 @@ def create_folds(df,num_folds):
     for i in range(0, len(sources),len_folds):
         fold_src= sources[i:i + len_folds]
         df.source=df.source.progress_apply(lambda x:x if x not in fold_src else f"fold_{i//len_folds}")
+    df.source=df.source.progress_apply(lambda x:f"fold_{num_folds-1}" if int(x.split("_")[-1])==num_folds else x)
     return df
 #---------------------------------------------------------------
 def processData(csv,language,max_len,img_dim,num_folds=None,return_df=False):
