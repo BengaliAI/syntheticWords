@@ -185,23 +185,26 @@ class GraphemeParser(object):
             else:                 
                 * grapheme 
         '''
-        decomp=[ch for ch in word]
-        decomp=self.get_root_from_decomp(decomp)
-        if return_graphemes:
-            return self.get_graphemes_from_decomp(decomp)
-        else:
-            components=[]
-            for comp in decomp:
-                if comp in self.vds+self.mds:
-                    components.append(comp)
-                else:
-                    cd_val=None
-                    for cd in self.cds:
-                        if cd in comp:
-                            comp=comp.replace(cd,"")
-                            cd_val=cd
-                    components.append(comp)
-                    if cd_val is not None:
-                        components.append(cd_val)
-            return components
-                            
+        try:
+            decomp=[ch for ch in word]
+            decomp=self.get_root_from_decomp(decomp)
+            if return_graphemes:
+                return self.get_graphemes_from_decomp(decomp)
+            else:
+                components=[]
+                for comp in decomp:
+                    if comp in self.vds+self.mds:
+                        components.append(comp)
+                    else:
+                        cd_val=None
+                        for cd in self.cds:
+                            if cd in comp:
+                                comp=comp.replace(cd,"")
+                                cd_val=cd
+                        components.append(comp)
+                        if cd_val is not None:
+                            components.append(cd_val)
+                return components
+        except Exception as e:
+            LOG_INFO(e)
+            LOG_INFO(word)                        
