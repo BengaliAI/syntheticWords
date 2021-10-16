@@ -1,5 +1,5 @@
 #!/bin/sh
-base_path="/media/ansary/DriveData/Work/APSIS/datasets/Recognition/"
+base_path="/media/ansary/DriveData/Work/APSIS/datasets/GVU/"
 #-----------------------------------------------------------------------------------------------
 data_dir="${base_path}data/"
 ds_path="${base_path}datasets/"

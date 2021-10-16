@@ -210,7 +210,7 @@ def createSyntheticData(iden,
     # save data
     dictionary=createRandomDictionary(valid_graphemes,dict_max_len,dict_min_len,num_samples)
     # dataframe vars
-    filenames=[]
+    filepaths=[]
     words=[]
     fiden=0
     # loop
@@ -226,10 +226,11 @@ def createSyntheticData(iden,
             # save
             fname=f"{fiden}.png"
             cv2.imwrite(os.path.join(save.img,fname),img)
-            filenames.append(fname)
+            filepaths.append(os.path.join(save.img,fname))
             words.append("".join(comps))
             fiden+=1
         except Exception as e:
             LOG_INFO(e)
-    df=pd.DataFrame({"filename":filenames,"word":words})
+    df=pd.DataFrame({"filepath":filepaths,"word":words})
     df.to_csv(os.path.join(save.csv),index=False)
+    return save.csv

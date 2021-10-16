@@ -204,9 +204,9 @@ class bangla:
                                 "ড়","ড়্গ","ঢ়","য়"]
     
     # vocab
-    unicodes                 =    sorted(vowels+consonants+vowel_diacritics+consonant_diacritics+special_charecters+numbers+punctuations) 
-    components               =    sorted(roots+vowel_diacritics+consonant_diacritics+special_charecters+numbers+punctuations)
-    valid                    =    sorted(dict_graphemes+numbers+punctuations)
+    unicodes                 =    ['']+sorted(vowels+consonants+vowel_diacritics+consonant_diacritics+special_charecters+numbers+punctuations) 
+    components               =    ['']+sorted(roots+vowel_diacritics+consonant_diacritics+special_charecters+numbers+punctuations)
+    valid                    =    ['']+sorted(dict_graphemes+numbers+punctuations)
 
 
 #----------------------------------------- add all language info-------------------------------------------------------------

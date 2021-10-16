@@ -52,101 +52,9 @@ def stripPads(arr,
     arr=arr[:, ~np.all(arr == val, axis=0)]
     return arr
 
-
-#--------------------------recog utils-----------------------------------------------------
-def padWordImage(img,pad_loc,pad_dim,pad_type,pad_val):
-    '''
-        pads an image with white value
-        args:
-            img     :       the image to pad
-            pad_loc :       (lr/tb) lr: left-right pad , tb=top_bottom pad
-            pad_dim :       the dimension to pad upto
-            pad_type:       central or left aligned pad
-            pad_val :       the value to pad 
-    '''
-    
-    if pad_loc=="lr":
-        # shape
-        h,w,d=img.shape
-        if pad_type=="central":
-            # pad widths
-            left_pad_width =(pad_dim-w)//2
-            # print(left_pad_width)
-            right_pad_width=pad_dim-w-left_pad_width
-            # pads
-            left_pad =np.ones((h,left_pad_width,3))*pad_val
-            right_pad=np.ones((h,right_pad_width,3))*pad_val
-            # pad
-            img =np.concatenate([left_pad,img,right_pad],axis=1)
-        else:
-            # pad widths
-            pad_width =pad_dim-w
-            # pads
-            pad =np.ones((h,pad_width,3))*pad_val
-            # pad
-            img =np.concatenate([img,pad],axis=1)
-    else:
-        # shape
-        h,w,d=img.shape
-        # pad heights
-        if h>= pad_dim:
-            return img 
-        else:
-            pad_height =pad_dim-h
-            # pads
-            pad =np.ones((pad_height,w,3))*pad_val
-            # pad
-            img =np.concatenate([img,pad],axis=0)
-    return img.astype("uint8")    
 #---------------------------------------------------------------
-def correctPadding(img,dim,ptype="central",pvalue=255):
-    '''
-        corrects an image padding 
-        args:
-            img     :       numpy array of single channel image
-            dim     :       tuple of desired img_height,img_width
-            ptype   :       type of padding (central,left)
-            pvalue  :       the value to pad
-        returns:
-            correctly padded image
-
-    '''
-    img_height,img_width=dim
-    mask=0
-    # check for pad
-    h,w,d=img.shape
-    
-    w_new=int(img_height* w/h) 
-    img=cv2.resize(img,(w_new,img_height),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
-    h,w,d=img.shape
-    if w > img_width:
-        # for larger width
-        h_new= int(img_width* h/w) 
-        img=cv2.resize(img,(img_width,h_new),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
-        # pad
-        img=padWordImage(img,
-                     pad_loc="tb",
-                     pad_dim=img_height,
-                     pad_type=ptype,
-                     pad_val=pvalue)
-        mask=img_width
-
-    elif w < img_width:
-        # pad
-        img=padWordImage(img,
-                    pad_loc="lr",
-                    pad_dim=img_width,
-                    pad_type=ptype,
-                    pad_val=pvalue)
-        mask=w
-    
-    # error avoid
-    img=cv2.resize(img,(img_width,img_height),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
-    return img,mask 
-#--------------------
-# parsing util
-#--------------------
-
+# parsing utils
+#---------------------------------------------------------------
 def str2bool(v):
     if isinstance(v, bool):
         return v
@@ -154,3 +62,130 @@ def str2bool(v):
         return True
     elif v.lower() in ('no', 'false', 'f', 'n', '0'):
         return False
+#---------------------------------------------------------------
+# text utils
+#---------------------------------------------------------------
+
+class GraphemeParser(object):
+    def __init__(self,language):
+        '''
+            initializes a grapheme parser for a given language
+            args:
+                language  :   a class that contains list of:
+                                1. vowel_diacritics 
+                                2. consonant_diacritics
+                                3. modifiers
+                                and 
+                                4. connector 
+        '''
+        # assignment
+        self.vds=language.vowel_diacritics 
+        self.cds=language.consonant_diacritics
+        self.mds=language.modifiers
+        self.connector=language.connector
+        # error check -- type
+        assert type(self.vds)==list,"Vowel Diacritics Is not a list"
+        assert type(self.cds)==list,"Consonant Diacritics Is not a list"
+        assert type(self.mds)==list,"Modifiers Is not a list"
+        assert type(self.connector)==str,"Connector Is not a string"
+    
+    def get_root_from_decomp(self,decomp):
+        '''
+            creates grapheme root based list 
+        '''
+        add=0
+        if self.connector in decomp:   
+            c_idxs = [i for i, x in enumerate(decomp) if x == self.connector]
+            # component wise index map    
+            comps=[[cid-1,cid,cid+1] for cid in c_idxs ]
+            # merge multi root
+            r_decomp = []
+            while len(comps)>0:
+                first, *rest = comps
+                first = set(first)
+
+                lf = -1
+                while len(first)>lf:
+                    lf = len(first)
+
+                    rest2 = []
+                    for r in rest:
+                        if len(first.intersection(set(r)))>0:
+                            first |= set(r)
+                        else:
+                            rest2.append(r)     
+                    rest = rest2
+
+                r_decomp.append(sorted(list(first)))
+                comps = rest
+            # add    
+            combs=[]
+            for ridx in r_decomp:
+                comb=''
+                for i in ridx:
+                    comb+=decomp[i]
+                combs.append(comb)
+                for i in ridx:
+                    decomp[i]=comb
+                    
+            # new root based decomp
+            new_decomp=[]
+            for i in range(len(decomp)-1):
+                if decomp[i] not in combs:
+                    new_decomp.append(decomp[i])
+                else:
+                    if decomp[i]!=decomp[i+1]:
+                        new_decomp.append(decomp[i])
+
+            new_decomp.append(decomp[-1])#+add*connector
+            
+            return new_decomp
+        else:
+            return decomp
+
+    def get_graphemes_from_decomp(self,decomp):
+        '''
+        create graphemes from decomp
+        '''
+        graphemes=[]
+        idxs=[]
+        for idx,d in enumerate(decomp):
+            if d not in self.vds+self.mds:
+                idxs.append(idx)
+        idxs.append(len(decomp))
+        for i in range(len(idxs)-1):
+            sub=decomp[idxs[i]:idxs[i+1]]
+            grapheme=''
+            for s in sub:
+                grapheme+=s
+            graphemes.append(grapheme)
+        return graphemes
+
+    def process(self,word,return_graphemes=False):
+        '''
+            processes a word for creating:
+            if return_graphemes=False (default):
+                * components
+            else:                 
+                * grapheme 
+        '''
+        decomp=[ch for ch in word]
+        decomp=self.get_root_from_decomp(decomp)
+        if return_graphemes:
+            return self.get_graphemes_from_decomp(decomp)
+        else:
+            components=[]
+            for comp in decomp:
+                if comp in self.vds+self.mds:
+                    components.append(comp)
+                else:
+                    cd_val=None
+                    for cd in self.cds:
+                        if cd in comp:
+                            comp=comp.replace(cd,"")
+                            cd_val=cd
+                    components.append(comp)
+                    if cd_val is not None:
+                        components.append(cd_val)
+            return components
+                            
