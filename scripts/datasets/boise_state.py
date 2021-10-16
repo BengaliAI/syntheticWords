@@ -131,7 +131,7 @@ def main(args):
 
 
     filepath=[]
-    word=[]
+    words=[]
     source=[]
     iden=0
     for img_path in tqdm(df.image.unique()):
@@ -162,12 +162,12 @@ def main(args):
                 fname=f"{iden}.png"
                 cv2.imwrite(os.path.join(save_path,fname),data)
                 filepath.append(os.path.join(save_path,fname))
-                word.append("".join(wdf.comp.tolist()))
+                words.append("".join(wdf.comp.tolist()))
                 source.append(img_path.replace(base_path,""))
                 iden+=1
         
 
-    data=pd.DataFrame({"filepath":filepath,"word":word,"source":source})
+    data=pd.DataFrame({"filepath":filepath,"word":words,"source":source})
     data.dropna(inplace=True)
     data.to_csv(os.path.join(main_path,"data.csv"),index=False)
 

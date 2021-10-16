@@ -1,6 +1,6 @@
 #!/bin/sh
-base_path="/media/ansary/DriveData/Work/APSIS/datasets/GVU/"
-#base_path="/home/apsisdev/ansary/DATASETS/GVU"
+#base_path="/media/ansary/DriveData/Work/APSIS/datasets/GVU/"
+base_path="/home/apsisdev/ansary/DATASETS/GVU/"
 bw_ref="/home/apsisdev/ansary/DATASETS/RAW/bangla_writing/converted/converted/"
 bh_ref="/home/apsisdev/ansary/DATASETS/RAW/BN-HTR/"
 bs_ref="/home/apsisdev/ansary/DATASETS/RAW/BanglaC/README.txt"

@@ -22,8 +22,15 @@ def get_labels(data_path):
     '''
     dfs=[]
     for i in tqdm(range(1,151)):
-        xlsx=os.path.join(data_path,f"{i}",f"{i}.xlsx")
+        if i==60:# Exception
+            xlsx=os.path.join(data_path,f"{i}",f"{i}.xl.xlsx")
+        else:
+            xlsx=os.path.join(data_path,f"{i}",f"{i}.xlsx")
+        print(xlsx)
         df=pd.read_excel(xlsx)
+        if len(df.columns)==0:
+            df=pd.read_excel(xlsx,sheet_name='Sheet1')
+        
         if "Id" in df.columns:
             filename=df["Id"].tolist()
         else:
