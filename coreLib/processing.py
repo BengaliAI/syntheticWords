@@ -15,6 +15,7 @@ tqdm.pandas()
 #--------------------
 # helpers
 #--------------------
+not_found=[]
 def pad_label(x,max_len,pad_value,start_end_value):
     '''
         lambda function to create padded label for robust scanner
@@ -31,12 +32,13 @@ def encode_label(x,vocab):
     '''
         encodes a label
     '''
+    global not_found
     label=[]
     for ch in x:
         try:
             label.append(vocab.index(ch))
         except Exception as e:
-            LOG_INFO(f"{ch} not in vocab")
+            if ch not in not_found:not_found.append(ch)
     return label
 
 def padWordImage(img,pad_loc,pad_dim,pad_type,pad_val):
@@ -175,6 +177,7 @@ def processLabels(df,language,max_len):
     df["unicodes"]=df.word.progress_apply(lambda x:[u for u in x])
     ## components
     df["components"]=df.word.progress_apply(lambda x:GP.process(x))
+    df.dropna(inplace=True)
     # label text
     df["eu_label"]=df.unicodes.progress_apply(lambda x:encode_label(x,language.unicodes))
     df["eg_label"]=df.components.progress_apply(lambda x:encode_label(x,language.components))
@@ -231,6 +234,7 @@ def processData(csv,language,max_len,img_dim,num_folds=None,return_df=False):
     df=df[cols]
     df.dropna(inplace=True)
     df.to_csv(csv,index=False)
+    LOG_INFO(f"Not Found:{not_found}")
     if return_df:
         return df
     else: 
