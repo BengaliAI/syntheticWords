@@ -26,7 +26,6 @@ def get_labels(data_path):
             xlsx=os.path.join(data_path,f"{i}",f"{i}.xl.xlsx")
         else:
             xlsx=os.path.join(data_path,f"{i}",f"{i}.xlsx")
-        print(xlsx)
         df=pd.read_excel(xlsx)
         if len(df.columns)==0:
             df=pd.read_excel(xlsx,sheet_name='Sheet1')

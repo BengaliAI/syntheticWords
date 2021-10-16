@@ -5,6 +5,7 @@
 #--------------------
 # imports
 #--------------------
+import random
 import pandas as pd 
 import cv2
 import math
@@ -191,8 +192,21 @@ def processLabels(df,language,max_len):
     pad_value      =len(language.components)+2
     df["pg_label"]=df.eg_label.progress_apply(lambda x:pad_label(x,max_len,pad_value,start_end_value))
     return df 
+
+def create_folds(df,num_folds):
+    '''
+        creates folding info
+    '''
+    sources=df.source.unique()
+    random.shuffle(sources)
+    LOG_INFO(f"unique sources:{len(sources)}")
+    len_folds=len(sources)//num_folds
+    for i in range(0, len(sources),len_folds):
+        fold_src= sources[i:i + len_folds]
+        df.source=df.source.progress_apply(lambda x:x if x not in fold_src else f"fold_{i//len_folds}")
+    return df
 #---------------------------------------------------------------
-def processData(csv,language,max_len,img_dim,return_df=False):
+def processData(csv,language,max_len,img_dim,num_folds=None,return_df=False):
     '''
         processes the dataset
         args:
@@ -200,12 +214,15 @@ def processData(csv,language,max_len,img_dim,return_df=False):
             language    :   language class
             max_len     :   model max_len
             img_dim     :   tuple of (img_height,img_width) 
+            num_folds   :   creating folds of the data
     '''
     df=pd.read_csv(csv)
     # images
     df=processImages(df,img_dim)
     # labels
     df=processLabels(df,language,max_len)
+    if num_folds is not None:
+        df=create_folds(df,num_folds=num_folds)
     # save data
     cols=["filepath","word","mask","pu_label","pg_label","pru_label","prg_label"]
     if "source" in df.keys():
