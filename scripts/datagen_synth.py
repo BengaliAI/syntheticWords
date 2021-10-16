@@ -63,7 +63,7 @@ def main(args):
     df=processData(csv,language,seq_max_len,img_dim,return_df=True)
     # storing
     save_path=os.path.dirname(csv)
-    save_path=create_dir(save_path,"tfrecords")
+    save_path=create_dir(save_path,iden)
     createRecords(df,save_path)
 
 #-----------------------------------------------------------------------------------
