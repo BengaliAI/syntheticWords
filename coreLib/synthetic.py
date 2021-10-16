@@ -11,7 +11,9 @@ import numpy as np
 import random
 import pandas as pd 
 from tqdm import tqdm
-from .utils import LOG_INFO, correctPadding,create_dir
+from .utils import *
+from .dataset import DataSet
+from .languages import languages
 import PIL
 import PIL.Image , PIL.ImageDraw , PIL.ImageFont 
 tqdm.pandas()
@@ -45,7 +47,6 @@ def createImgFromComps(df,comps,pad):
     
     # get images
     imgs=[cv2.imread(img_path,0) for img_path in img_paths]
-    
     # alignment of component
     ## flags
     tp=False
@@ -125,6 +126,28 @@ def createFontImageFromComps(font,comps):
     img=255-img
     return img    
     
+def createRandomDictionary(valid_graphemes,dict_max_len,dict_min_len,num_samples):
+    '''
+        creates a randomized dictionary
+        args:
+            valid_graphemes :       list of graphemes that can be used to create a randomized dictionary 
+            num_samples     :       number of data to be created if no dictionary is provided
+            dict_max_len    :       the maximum length of data for randomized dictionary
+            dict_min_len    :       the minimum length of data for randomized dictionary
+        returns:
+            a dictionary dataframe with "word" and "graphemes"
+    '''
+    word=[]
+    graphemes=[]
+    for _ in tqdm(range(num_samples)):
+        len_word=random.randint(dict_min_len,dict_max_len)
+        _graphemes=[]
+        for _ in range(len_word):
+            _graphemes.append(random.choice(valid_graphemes))
+        graphemes.append(_graphemes)
+        word.append("".join(_graphemes))
+    df=pd.DataFrame({"word":word,"graphemes":graphemes})
+    return df 
 
 
 
@@ -132,100 +155,81 @@ def createFontImageFromComps(font,comps):
 # ops
 #--------------------
 def createSyntheticData(iden,
-                        df,
-                        img_dir,
                         save_dir,
-                        fonts,
-                        img_dim,
-                        comp_dim,
-                        pad_height,
-                        top_exts,
-                        bot_exts,
-                        dictionary,
-                        sample_per_word=100,
-                        pad_type="left"):
+                        data_type,    
+                        data_dir,
+                        language,
+                        num_samples=100000,
+                        dict_max_len=10,
+                        dict_min_len=1,
+                        comp_dim=64,
+                        pad_height=20):
     '''
         creates: 
             * handwriten word image
-            * fontspace target image
-            * a dataframe/csv that holds grapheme level groundtruth
+            * fontspace word image
+            * a dataframe/csv that holds word level groundtruth
         args:
-            iden        :       identifier of the dataset
-            df          :       the dataframe that contains filename and label 
-            img_dir     :       the directory that holds the images
-            save_dir    :       the directory to save the outputs
-            fonts       :       the path of the fonts to be used
-            img_dim         :       (img_height,img_width) tuple for final word image
-            comp_dim        :       min component height for each grapheme image
-            pad_height      :       the fixed padding height for alignment
-            top_exts        :       list of extensions where the top is to be padded    
-            bot_exts        :       list of extensions where the bottom is to be padded
-            
-            dictionary      :       if a dictionary is to be used, then pass the dictionary. 
-                                    The dictionary dataframe should contain "word" and "graphemes"
-            sample_per_word :       number of samples per word
-            pad_type        :       wheather to do central padding or left padding
-                                
+            iden            :       identifier of the dataset
+            img_height      :       height of the image
+            save_dir        :       the directory to save the outputs
+            data_type       :       the data_type to create (handwritten/printed)
+            data_dir        :       the directory that holds graphemes and numbers and fonts data
+            language        :       the specific language to use
+            num_samples     :       number of data to be created 
+            dict_max_len    :       the maximum length of data for randomized dictionary
+            dict_min_len    :       the minimum length of data for randomized dictionary                    
     '''
     #---------------
     # processing
     #---------------
     save_dir=create_dir(save_dir,iden)
-    # create img_path in df
-    df["img_path"]=df.filename.progress_apply(lambda x:os.path.join(img_dir,f"{x}.bmp")) 
+    LOG_INFO(save_dir)
     # save_paths
     class save:    
         img=create_dir(save_dir,"images")
         csv=os.path.join(save_dir,"data.csv")
-    # pad
-    class pad:
-        no_pad_dim      =(comp_dim,comp_dim)
-        single_pad_dim  =(int(comp_dim+pad_height),int(comp_dim+pad_height))
-        double_pad_dim  =(int(comp_dim+2*pad_height),int(comp_dim+2*pad_height))
-        top             =top_exts
-        bot             =bot_exts
-        height          =pad_height   
-
     
-    dictionary=dictionary.sample(frac=1)
-        
+    # dataset
+    if data_type=="printed":
+        ds=DataSet(data_dir,language.iden,use_printed_only=True)
+        pad=None
+        valid_graphemes=language.valid
+    else:
+        ds=DataSet(data_dir,language.iden)
+        valid_graphemes=ds.valid_graphemes
+        # pad
+        class pad:
+            no_pad_dim      =(comp_dim,comp_dim)
+            single_pad_dim  =(int(comp_dim+pad_height),int(comp_dim+pad_height))
+            double_pad_dim  =(int(comp_dim+2*pad_height),int(comp_dim+2*pad_height))
+            top             =language.top_exts
+            bot             =language.bot_exts
+            height          =pad_height   
+
     # save data
+    dictionary=createRandomDictionary(valid_graphemes,dict_max_len,dict_min_len,num_samples)
     # dataframe vars
-    filename=[]
-    labels=[]
-    imasks=[]
+    filenames=[]
+    words=[]
     fiden=0
     # loop
     for idx in tqdm(range(len(dictionary))):
         try:
             comps=dictionary.iloc[idx,1]
-            # font images
-            for font_path in fonts:
-                font=PIL.ImageFont.truetype(font_path,comp_dim)
-                img=createFontImageFromComps(font,comps)
-                # correct padding
-                img,imask=correctPadding(img,img_dim,ptype=pad_type)
-                # save
-                fname=f"{fiden}.png"
-                cv2.imwrite(os.path.join(save.img,fname),img)
-                filename.append(fname)
-                labels.append(comps)
-                imasks.append(imask)
-                fiden+=1    
-            # hand-written images
-            for _ in range(sample_per_word-len(fonts)):
+            if data_type=="printed":
+                font=PIL.ImageFont.truetype(random.choice(ds.fonts),comp_dim)
+                img=createFontImageFromComps(font,comps)    
+            else:
                 # image
-                img=createImgFromComps(df=df,comps=comps,pad=pad)
-                # correct padding
-                img,imask=correctPadding(img,img_dim,ptype=pad_type)
-                # save
-                fname=f"{fiden}.png"
-                cv2.imwrite(os.path.join(save.img,fname),img)
-                filename.append(fname)
-                labels.append(comps)
-                imasks.append(imask)
-                fiden+=1
+                img=createImgFromComps(df=ds.df,comps=comps,pad=pad)
+            # save
+            fname=f"{fiden}.png"
+            cv2.imwrite(os.path.join(save.img,fname),img)
+            filenames.append(fname)
+            words.append("".join(comps))
+            fiden+=1
         except Exception as e:
             LOG_INFO(e)
-    df=pd.DataFrame({"filename":filename,"labels":labels,"image_mask":imasks})
+    df=pd.DataFrame({"filename":filenames,"word":words})
     df.to_csv(os.path.join(save.csv),index=False)

@@ -2,7 +2,7 @@
 # synthetic words
 
 ```python
-Version: 0.1.3     
+Version: 0.1.4     
 ```
 ### **Related resources**:
 
@@ -30,51 +30,9 @@ OR use conda-
 * **conda**: use environment.yml: ```conda env create -f environment.yml```
 
 
-# Resources:
-* **vocab.json**        : holder for unicode and grapheme level vocabulary data
-* **scripts(folder)**   : fixed-execution (the execution is for certain purposes) **.py and .sh** files
-* **tools(folder)**     : **.py** files created with generalized / variable execution purposes
-* **datasets(folder)**  : **.ipynb** files with specific instructions for specific natrual datasets
-* **datasets.md**       : sources and processing instuctions for used datasets  
-* **execution.md**      : execution notes for all scripts and tools
-* **coreLib(folder)**   : a custom module for cleaner work flow
 
-
-# Re-production
-
-The series of execution is as follows
-
-1. **datasets/boise_state.ipynb**
-2. **datasets/bn_htr.ipynb**
-3. **datasets/bangla_writing.ipynb**
-4. **datasets/synthetic.ipynb**
-5. **tools/process.py** x 3 : execute for all 3 natrual written datasets(bw,bs,bh)
-6. **scripts/extend_vocab.py**
-7. **scripts/data_synth.py**
-8. **tools/record.py**  x 7 : to create tfrecords for the following datasets
-
-
-```
-    bw/train
-    bw/test
-    bs/train
-    bs/test
-    bh/train
-    bh/test
-    synth
-```
-**Alternatively**: modify scripts/XXXX.sh for specific format data and skip step 5 to 8
-
-**see execution.md for notes and specific instructions** 
-
-**Notes**:
-initial vocab:
-
-```python
-{
-    "gvocab": [""]
-}
-```
-
-
+# TODO
+- [ ] update datasets.md
+- [ ] update scripts.md
+- [ ] synthetic words: printed and handwritten
 

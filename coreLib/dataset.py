@@ -7,96 +7,80 @@
 #--------------------
 import os
 import pandas as pd 
-from ast import literal_eval
 from glob import glob
 from tqdm import tqdm
-from .utils import LOG_INFO
+from .utils import *
 tqdm.pandas()
 #--------------------
 # class info
 #--------------------
-class bangla:
-    vowels                 =   ['অ', 'আ', 'ই', 'ঈ', 'উ', 'ঊ', 'ঋ', 'এ', 'ঐ', 'ও', 'ঔ']
-    consonants             =   ['ক', 'খ', 'গ', 'ঘ', 'ঙ', 
-                                'চ', 'ছ','জ', 'ঝ', 'ঞ', 
-                                'ট', 'ঠ', 'ড', 'ঢ', 'ণ', 
-                                'ত', 'থ', 'দ', 'ধ', 'ন', 
-                                'প', 'ফ', 'ব', 'ভ', 'ম', 
-                                'য', 'র', 'ল', 'শ', 'ষ', 
-                                'স', 'হ','ড়', 'ঢ়', 'য়']
-    modifiers              =   ['ঁ', 'ং', 'ঃ','ৎ']
-    # diacritics
-    vowel_diacritics       =   ['া', 'ি', 'ী', 'ু', 'ূ', 'ৃ', 'ে', 'ৈ', 'ো', 'ৌ']
-    consonant_diacritics   =   ['ঁ', 'র্', 'র্য', '্য', '্র', '্র্য', 'র্্র']
-    # special charecters
-    nukta                  =   '়'
-    hosonto                =   '্'
-    special_charecters     =   [ nukta, hosonto,'\u200d']
-    
-    mods=['ঁ', 'ং', 'ঃ']
 
-    top_exts               =   ['ই', 'ঈ', 'উ', 'ঊ', 'ঐ','ঔ','ট', 'ঠ',' ি', 'ী', 'ৈ', 'ৌ','ঁ','র্']
-
-    bot_exts               =  ['ু', 'ূ', 'ৃ',]
-    valid                  =  vowels+consonants+vowel_diacritics+consonant_diacritics+special_charecters
         
 class DataSet(object):
-    def __init__(self,data_dir):
+    def __init__(self,data_dir,language,use_printed_only=False):
         '''
             data_dir : the location of the data folder
         '''
         self.data_dir       =   data_dir
-            
-            
-        class graphemes:
-            dir   =   os.path.join(data_dir,"bangla","graphemes")
-            csv   =   os.path.join(data_dir,"bangla","graphemes.csv")
+        self.language       =   language    
+        if not use_printed_only:
+            # resources
+            class graphemes:
+                dir   =   os.path.join(data_dir,language,"graphemes")
+                csv   =   os.path.join(data_dir,language,"graphemes.csv")
 
-        self.all_fonts       =   [fpath for fpath in glob(os.path.join(data_dir,"bangla","fonts","*.ttf"))]
+            class numbers:
+                dir   =   os.path.join(data_dir,language,"numbers")
+                csv   =   os.path.join(data_dir,language,"numbers.csv")
 
-        # assign
-        self.graphemes          = graphemes
-        # error check
-        self.__checkExistance()        
-        # get df
-        self.graphemes.df    =self.__getDataFrame(self.graphemes.csv)
         
-        # graphemes
-        self.known_graphemes=sorted(list(self.graphemes.df.label.unique()))
-        # data validity
-        self.__checkDataValidity(self.graphemes,"bangla.graphemes")
-        
+        self.fonts       =   [fpath for fpath in glob(os.path.join(data_dir,language,"fonts","*.ttf"))]
+        if not use_printed_only:
+            # assign
+            self.graphemes          = graphemes
+            self.numbers            = numbers
+            # error check
+            self.__checkExistance()        
+            # get df
+            self.graphemes.df    =  self.__getDataFrame(self.graphemes)
+            self.numbers.df      =  self.__getDataFrame(self.numbers)
+            # data validity
+            self.__checkDataValidity(self.graphemes,f"{self.language}.graphemes")
+            self.__checkDataValidity(self.numbers,f"{self.language}.numbers")
+            # lists
+            self.graphemes_list= sorted(list(self.graphemes.df.label.unique()))
+            self.numbers_list  = sorted(list(self.numbers.df.label.unique()))
+            # combined data
+            self.valid_graphemes=sorted(self.graphemes_list+self.numbers_list)
+            self.df             =pd.concat([self.graphemes.df,self.numbers.df],ignore_index=False)
 
     def __checkExistance(self):
         '''
             check for paths and make sure the data is there 
         '''
-        assert os.path.exists(self.graphemes.dir),"Bangla graphemes dir not found"
-        assert os.path.exists(self.graphemes.csv),"Bangla graphemes csv not found" 
+        assert os.path.exists(self.graphemes.dir),f"{self.language} graphemes dir not found"
+        assert os.path.exists(self.graphemes.csv),f"{self.language} graphemes csv not found" 
+        assert os.path.exists(self.numbers.dir),f"{self.language} numbers dir not found"
+        assert os.path.exists(self.numbers.csv),f"{self.language} numbers csv not found" 
         LOG_INFO("All paths found",mcolor="green")
     
 
-    def __getDataFrame(self,csv,is_dict=False):
+    def __getDataFrame(self,obj):
         '''
             creates the dataframe from a given csv file
             args:
-                csv       =   csv file path
-                is_dict   =   if the csv is a dictionary
+                obj       =   the obj that has csv and dir
+                
         '''
         try:
-            df=pd.read_csv(csv)
-            if is_dict:
-                assert "word" in df.columns,f"word column not found:{csv}"
-                assert "graphemes" in df.columns,f"graphemes column not found:{csv}"
-                df.graphemes=df.graphemes.progress_apply(lambda x: literal_eval(x))
-                df= df.sample(frac=1)
-            else:    
-                assert "filename" in df.columns,f"filename column not found:{csv}"
-                assert "label" in df.columns,f"label column not found:{csv}"
-                df.label=df.label.progress_apply(lambda x: str(x))
+            df=pd.read_csv(obj.csv)
+            assert "filename" in df.columns,f"filename column not found:{obj.csv}"
+            assert "label" in df.columns,f"label column not found:{obj.csv}"
+            df.label=df.label.progress_apply(lambda x: str(x))
+            df["img_path"]=df["filename"].progress_apply(lambda x:os.path.join(obj.dir,f"{x}.bmp"))
             return df
         except Exception as e:
-            LOG_INFO(f"Error in processing:{csv}",mcolor="yellow")
+            LOG_INFO(f"Error in processing:{obj.csv}",mcolor="yellow")
             LOG_INFO(f"{e}",mcolor="red") 
                 
 
