@@ -5,8 +5,6 @@
 #--------------------
 # imports
 #--------------------
-from re import L
-
 
 class bangla:
     iden                   =    "bangla"

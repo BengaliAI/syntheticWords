@@ -210,7 +210,9 @@ def processData(csv,language,max_len,img_dim,return_df=False):
     cols=["filepath","word","mask","pu_label","pg_label","pru_label","prg_label"]
     if "source" in df.keys():
         cols.append("source")
+        # add fold info
     df=df[cols]
+    df.dropna(inplace=True)
     df.to_csv(csv,index=False)
     if return_df:
         return df

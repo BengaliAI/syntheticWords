@@ -34,5 +34,7 @@ OR use conda-
 # TODO
 - [ ] update datasets.md
 - [ ] update scripts.md
-- [ ] synthetic words: printed and handwritten
+- [x] synthetic words: printed and handwritten
+- [ ] indic-iit dataset
+- [ ] recheck-previous 3 datasets
 
