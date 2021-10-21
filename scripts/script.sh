@@ -19,6 +19,7 @@ bn_hr_ds="${ds_path}bangla_handwritten/"
 
 iit_bn_ref="${iit_path}bn/vocab.txt"
 iit_bn_ds="${ds_path}iit.bn/"
+iit_bn_test_ds="${ds_path}iit.bn/test/"
 
 iit_gu_ref="${iit_path}gu/vocab.txt"
 iit_gu_ds="${ds_path}iit.gu/"
@@ -70,6 +71,7 @@ iit_ur_ds="${ds_path}iit.ur/"
 #-----------------------------------indic-----------------------------------------------
 
 #-----------------------------------storing-----------------------------------------------
+python create_recs.py iit_bn_test_ds
 python create_recs.py bw_ds
 python create_recs.py bh_ds
 python create_recs.py bs_ds

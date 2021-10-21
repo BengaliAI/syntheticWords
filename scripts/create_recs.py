@@ -25,6 +25,9 @@ def main(args):
     
     data_dir    =   args.data_dir
     iden        =   os.path.basename(data_dir)
+    if iden=="test":
+        base=os.path.basename(os.path.dirname(data_dir))
+        iden=f"{base}.test"
     
     # storing
     csv=os.path.join(data_dir,"data.csv")
