@@ -71,13 +71,13 @@ iit_ur_ds="${ds_path}iit.ur/"
 #-----------------------------------indic-----------------------------------------------
 
 #-----------------------------------storing-----------------------------------------------
-python create_recs.py $iit_bn_test_ds
-python create_recs.py $bw_ds
-python create_recs.py $bh_ds
-python create_recs.py $bs_ds
-python create_recs.py $iit_bn_ds
-python create_recs.py $bn_pr_ds
-python create_recs.py $bn_hr_ds
+python create_recs.py $iit_bn_test_ds "iit.bn.test"
+python create_recs.py $bw_ds "bw" 
+python create_recs.py $bh_ds "bh" 
+python create_recs.py $bs_ds "bs" 
+python create_recs.py $iit_bn_ds "iit.bn" 
+python create_recs.py $bn_pr_ds "bangla_printed"
+python create_recs.py $bn_hr_ds "bangla_handwritten"
 #-----------------------------------sroting-----------------------------------------------
 
 

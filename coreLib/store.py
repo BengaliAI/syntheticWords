@@ -57,7 +57,7 @@ def toTfrecord(df,rnum,rec_path):
             file_iden=os.path.basename(img_path)
             file_iden=int(file_iden.split(".")[0])
             data["img_iden"]=_int64_list_feature([file_iden])
-             
+
             features=tf.train.Features(feature=data)
             example= tf.train.Example(features=features)
             serialized=example.SerializeToString()
@@ -70,7 +70,7 @@ def createRecords(data,save_path,tf_size=10240):
             data        :   either the csv path or a dataframe
             save_path   :   location to save tfrecords
     '''
-    if type(data)=="str":
+    if type(data)==str:
         data=pd.read_csv(data)
         for col in eval_cols:
             data[col]=data[col].progress_apply(lambda x: literal_eval(x))

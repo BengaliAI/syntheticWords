@@ -24,14 +24,12 @@ tqdm.pandas()
 def main(args):
     
     data_dir    =   args.data_dir
-    iden        =   os.path.basename(data_dir)
-    if iden=="test":
-        base=os.path.basename(os.path.dirname(data_dir))
-        iden=f"{base}.test"
+    iden        =   args.iden
     LOG_INFO(data_dir)
     LOG_INFO(iden)
     # storing
     csv=os.path.join(data_dir,"data.csv")
+    LOG_INFO(csv)
     save_path=create_dir(data_dir,iden)
     LOG_INFO(save_path)
     createRecords(csv,save_path)
@@ -43,5 +41,6 @@ if __name__=="__main__":
     '''
     parser = argparse.ArgumentParser("TFRecords Dataset Creating Script")
     parser.add_argument("data_dir", help="Path of the source data folder that contains langauge datasets")
+    parser.add_argument("iden",help="identifier to identify the dataset")
     args = parser.parse_args()
     main(args)
