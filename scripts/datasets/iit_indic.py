@@ -21,11 +21,11 @@ from coreLib.utils import *
 random.seed(42)
 
 
-def process(txt,vocab,dir,save_path,mode):
+def process(txt,vocab,dir,save_path,idx):
     filepath=[]
     word=[]
     source=[]
-    i=0
+    
 
     with open(txt,"r") as f:
         data=f.readlines()
@@ -39,7 +39,7 @@ def process(txt,vocab,dir,save_path,mode):
             # thresh
             _,img = cv2.threshold(img,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
             img=stripPads(img,255)
-            fname=f"{mode}_{i}.png"
+            fname=f"{idx}.png"
             img_save_path=os.path.join(save_path,fname)
             # save
             cv2.imwrite(img_save_path,img)
@@ -47,11 +47,11 @@ def process(txt,vocab,dir,save_path,mode):
             filepath.append(img_save_path)
             word.append(label)
             source.append(os.path.basename(img_path))
-            i=i+1
+            idx=idx+1
         except Exception as e: 
             LOG_INFO(f"error in creating image:{img_path} label:{label},error:{e}",mcolor='red')
     df=pd.DataFrame({"filepath":filepath,"word":word,"source":source})
-    return df     
+    return df,idx     
     
 
 
@@ -95,14 +95,14 @@ def main(args):
     
     # process
     dfs=[]
-    df=process(train_txt,vocab,data_path,save_path,mode="train")
+    df,idx=process(train_txt,vocab,data_path,save_path,idx=0)
     dfs.append(df)
-    df=process(val_txt,vocab,data_path,save_path,mode="val")
+    df,idx=process(val_txt,vocab,data_path,save_path,idx)
     dfs.append(df)
     df=pd.concat(dfs,ignore_index=True)
     df.to_csv(os.path.join(main_path,"data.csv"),index=False)
 
-    df=process(test_txt,vocab,data_path,test_save_path,mode="test")
+    df,_=process(test_txt,vocab,data_path,test_save_path,idx=0)
     df.to_csv(os.path.join(test_main_path,"data.csv"),index=False)
 
 #-----------------------------------------------------------------------------------

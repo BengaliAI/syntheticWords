@@ -51,8 +51,9 @@ iit_ur_ds="${ds_path}iit.ur/"
 #python datagen.py $bs_ds "bangla"
 #python datasets/bn_htr.py $bh_ref $ds_path
 #python datagen.py $bh_ds "bangla"
-#python datasets/iit_indic.py $iit_bn_ref $ds_path
-#python datagen.py $iit_bn_ds "bangla"
+python datasets/iit_indic.py $iit_bn_ref $ds_path
+python datagen.py $iit_bn_ds "bangla"
+python datagen.py $iit_bn_test_ds "bangla" --iden "iit.bn.test"
 #-----------------------------------natrual---------------------------------------------
 #-----------------------------------synthetic------------------------------------------
 #python datagen_synth.py $data_dir "bangla" "printed" $ds_path --num_samples 1000000
@@ -61,22 +62,22 @@ iit_ur_ds="${ds_path}iit.ur/"
 #-----------------------------------bangla-----------------------------------------------
 
 #-----------------------------------indic-----------------------------------------------
-#python datasets/iit_indic.py $iit_gu_ref $ds_path
-#python datasets/iit_indic.py $iit_kn_ref $ds_path
-#python datasets/iit_indic.py $iit_ma_ref $ds_path
-#python datasets/iit_indic.py $iit_od_ref $ds_path
-#python datasets/iit_indic.py $iit_pn_ref $ds_path
-#python datasets/iit_indic.py $iit_ta_ref $ds_path
-#python datasets/iit_indic.py $iit_ur_ref $ds_path
+python datasets/iit_indic.py $iit_gu_ref $ds_path
+python datasets/iit_indic.py $iit_kn_ref $ds_path
+python datasets/iit_indic.py $iit_ma_ref $ds_path
+python datasets/iit_indic.py $iit_od_ref $ds_path
+python datasets/iit_indic.py $iit_pn_ref $ds_path
+python datasets/iit_indic.py $iit_ta_ref $ds_path
+python datasets/iit_indic.py $iit_ur_ref $ds_path
 #-----------------------------------indic-----------------------------------------------
 
 #-----------------------------------storing-----------------------------------------------
-python create_recs.py $bw_ds "bw" 
-python create_recs.py $bh_ds "bh" 
-python create_recs.py $bs_ds "bs" 
 python create_recs.py $iit_bn_ds "iit.bn" 
-python create_recs.py $bn_pr_ds "bangla_printed"
-python create_recs.py $bn_hr_ds "bangla_handwritten"
+#python create_recs.py $bw_ds "bw" 
+#python create_recs.py $bh_ds "bh" 
+#python create_recs.py $bs_ds "bs" 
+#python create_recs.py $bn_pr_ds "bangla_printed"
+#python create_recs.py $bn_hr_ds "bangla_handwritten"
 #-----------------------------------sroting-----------------------------------------------
 
 
