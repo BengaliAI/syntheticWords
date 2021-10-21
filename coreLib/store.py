@@ -54,6 +54,10 @@ def toTfrecord(df,rnum,rec_path):
                 if col in eval_cols:
                     data[col]=_int64_list_feature(df.iloc[idx,cidx]) 
 
+            file_iden=os.path.basename(img_path)
+            file_iden=int(file_iden.split(".")[0])
+            data["img_iden"]=_int64_list_feature([file_iden])
+             
             features=tf.train.Features(feature=data)
             example= tf.train.Example(features=features)
             serialized=example.SerializeToString()
