@@ -28,7 +28,8 @@ def main(args):
     if iden=="test":
         base=os.path.basename(os.path.dirname(data_dir))
         iden=f"{base}.test"
-    
+    LOG_INFO(data_dir)
+    LOG_INFO(iden)
     # storing
     csv=os.path.join(data_dir,"data.csv")
     save_path=create_dir(data_dir,iden)
