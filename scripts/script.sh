@@ -71,7 +71,6 @@ iit_ur_ds="${ds_path}iit.ur/"
 #-----------------------------------indic-----------------------------------------------
 
 #-----------------------------------storing-----------------------------------------------
-python create_recs.py $iit_bn_test_ds "iit.bn.test"
 python create_recs.py $bw_ds "bw" 
 python create_recs.py $bh_ds "bh" 
 python create_recs.py $bs_ds "bs" 
