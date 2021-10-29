@@ -10,6 +10,8 @@ num_hw_samples=500000
 #-----------------------------------------------------------------------------------------------
 data_dir="${base_path}data/"
 ds_path="${base_path}datasets/"
+up_path="${base_path}uploads/"
+
 bw_ds="${ds_path}bw/"
 bh_ds="${ds_path}bh/"
 bs_ds="${ds_path}bs/"
@@ -19,24 +21,31 @@ bn_hr_ds="${ds_path}bangla_handwritten/"
 
 iit_bn_ref="${iit_path}bn/vocab.txt"
 iit_bn_ds="${ds_path}iit.bn/"
+iit_bn_rec="${iit_bn_ds}iit.bn/"
 
 iit_gu_ref="${iit_path}gu/vocab.txt"
 iit_gu_ds="${ds_path}iit.gu/"
+iit_gu_rec="${iit_gu_ds}iit.gu/"
 
 iit_ma_ref="${iit_path}ma/vocab.txt"
 iit_ma_ds="${ds_path}iit.ma/"
+iit_ma_rec="${iit_ma_ds}iit.ma/"
 
 iit_od_ref="${iit_path}od/vocab.txt"
 iit_od_ds="${ds_path}iit.od/"
+iit_od_rec="${iit_od_ds}iit.od/"
 
 iit_pn_ref="${iit_path}pn/vocab.txt"
 iit_pn_ds="${ds_path}iit.pn/"
+iit_pn_rec="${iit_pn_ds}iit.pn/"
 
 iit_ta_ref="${iit_path}ta/vocab.txt"
 iit_ta_ds="${ds_path}iit.ta/"
+iit_ta_rec="${iit_ta_ds}iit.ta/"
 
 iit_hn_ref="/home/apsisdev/Rezwan/IIIT-HW-Dev_v1/lexicon.txt"
 iit_hn_ds="${ds_path}iit.hn/"
+iit_hn_rec="${iit_hn_ds}iit.hn/"
 
 #-----------------------------------bangla-----------------------------------------------
 #-----------------------------------natrual---------------------------------------------
@@ -57,7 +66,8 @@ iit_hn_ds="${ds_path}iit.hn/"
 #-----------------------------------iit-indic-----------------------------------------------
 python datasets/iit_indic.py $iit_bn_ref $ds_path
 python datagen.py $iit_bn_ds "bangla"
-python datasets/iit_v1.py $iit_hn_ref $ds_path --iden "iit.hn"
+zip -r "${up_path}iit.bn.zip" $iit_bn_rec
+#python datasets/iit_v1.py $iit_hn_ref $ds_path --iden "iit.hn"
 #python datagen.py $iit_hn_ds "hindi"
 
 #python datasets/iit_indic.py $iit_gu_ref $ds_path

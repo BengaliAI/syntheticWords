@@ -202,7 +202,7 @@ def create_folds(df,num_folds):
     '''
     sources=df.source.unique()
     # check for "test" data in sources
-    test_sources=[src for src in sources if "test" is sources]
+    test_sources=[src for src in sources if "test" in src]
     if len(test_sources)>0:
         LOG_INFO(f"Test unique sources:{len(test_sources)}")
         sources=[src for src in sources if src not in test_sources]

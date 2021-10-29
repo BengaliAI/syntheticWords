@@ -82,10 +82,10 @@ def createRecords(data,save_path,tf_size=10240):
             rnum      =   idx//tf_size
             toTfrecord(df,rnum,save_path)
     else:
-        for fold in tqdm(data.source.unique()):
+        for fold in data.source.unique():
             LOG_INFO(f"TFRecords:{fold}")
             fold_df=data.loc[data["source"]==fold]
-            for idx in range(0,len(fold_df),tf_size):
+            for idx in tqdm(range(0,len(fold_df),tf_size)):
                 df        =   fold_df.iloc[idx:idx+tf_size]  
                 rnum      =   idx//tf_size
                 toTfrecord(df,f"{fold}_{rnum}",save_path)
