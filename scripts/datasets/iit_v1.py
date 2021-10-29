@@ -32,8 +32,8 @@ def process(txt,dir,save_path,idx):
     
     for line in tqdm(data):
         try:
-            img_path,label=line.split(" ")
-            img_path=os.path.join(dir,img_path)
+            img_iden,label=line.split(" ")
+            img_path=os.path.join(dir,img_iden)
             img=cv2.imread(img_path,0)
             # thresh
             _,img = cv2.threshold(img,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
@@ -45,7 +45,7 @@ def process(txt,dir,save_path,idx):
             # append
             filepath.append(img_save_path)
             word.append(label)
-            source.append(os.path.basename(img_path))
+            source.append(img_iden)
             idx=idx+1
         except Exception as e: 
             LOG_INFO(f"error in creating image:{img_path} label:{label},error:{e}",mcolor='red')

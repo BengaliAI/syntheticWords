@@ -46,7 +46,7 @@ def process(txt,vocab,dir,save_path,idx):
             # append
             filepath.append(img_save_path)
             word.append(label)
-            source.append(os.path.basename(img_path))
+            source.append(img_iden)
             idx=idx+1
         except Exception as e: 
             LOG_INFO(f"error in creating image:{img_path} label:{label},error:{e}",mcolor='red')
