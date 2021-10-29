@@ -282,6 +282,21 @@ class malyalam:
     modifiers              =    []
     connector              =    '്' # yes, this shit is malayalam hoshonto -_- 
     special_charecters     =    [connector,'\u200d', '\u200c']
+
+class hindi:
+    iden                   =    "hindi"
+
+    numbers                =    ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९']
+    punctuations           =    ['!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', 
+                                 '/', ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`',
+                                 '{', '|', '}', '~', '।', '॥'] 
+    # for grapheme decomp
+    vowel_diacritics       =    ['ि', 'ी', 'ु', 'ू', 'े', 'ो', 'ै', 'ौ', 'ा']
+    vocalics               =    ['ृ' ,  'ॅ', 'ॉ'] # last two actually vocalics, infrequents actually in hindi
+    consonant_diacritics   =    []+vocalics
+    modifiers              =    ['ः', 'ं', 'ँ', '']
+    connector              =    '्'
+    special_charecters     =    [connector,'\u200d', '\u200c']
 #----------------------------------------- add all language info-------------------------------------------------------------
 languages={}
 languages["bangla"]=bangla
@@ -290,6 +305,6 @@ languages["tamil"]=tamil
 languages["gujrati"]=gujrati
 languages["panjabi"]=panjabi
 languages["odiya"]=odiya
-
+languages["hindi"]=hindi
 
 

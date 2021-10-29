@@ -206,5 +206,4 @@ class GraphemeParser(object):
                             components.append(cd_val)
                 return components
         except Exception as e:
-            LOG_INFO(e)
-            LOG_INFO(word)                        
+           print(word)                        
