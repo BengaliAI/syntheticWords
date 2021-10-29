@@ -710,10 +710,10 @@ class hindi:
                                  '/', ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`',
                                  '{', '|', '}', '~', '।', '॥'] 
     # for grapheme decomp
-    vowel_diacritics       =    ['ि', 'ी', 'ु', 'ू', 'े', 'ो', 'ै', 'ौ', 'ा']
-    vocalics               =    ['ृ' ,  'ॅ', 'ॉ'] # last two actually vocalics, infrequents actually in hindi
-    consonant_diacritics   =    []+vocalics
-    modifiers              =    ['ः', 'ं', 'ँ', '']
+    vowel_diacritics       =    ['ि', 'ी', 'ु', 'ू', 'े', 'ो', 'ै', 'ौ', 'ा', 'ृ' ,  'ॅ', 'ॉ']
+    vocalics               =    [] # last two actually vocalics, infrequents actually in hindi
+    consonant_diacritics   =    ['ः', 'ं', 'ँ', ''] # []+vocalics
+    modifiers              =    []
     connector              =    '्'
     special_charecters     =    [connector,'\u200d', '\u200c']
     allow_conn_ending      =    True
