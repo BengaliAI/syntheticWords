@@ -19,13 +19,9 @@ bn_hr_ds="${ds_path}bangla_handwritten/"
 
 iit_bn_ref="${iit_path}bn/vocab.txt"
 iit_bn_ds="${ds_path}iit.bn/"
-iit_bn_test_ds="${ds_path}iit.bn/test/"
 
 iit_gu_ref="${iit_path}gu/vocab.txt"
 iit_gu_ds="${ds_path}iit.gu/"
-
-iit_kn_ref="${iit_path}kn/vocab.txt"
-iit_kn_ds="${ds_path}iit.kn/"
 
 iit_ma_ref="${iit_path}ma/vocab.txt"
 iit_ma_ds="${ds_path}iit.ma/"
@@ -39,21 +35,17 @@ iit_pn_ds="${ds_path}iit.pn/"
 iit_ta_ref="${iit_path}ta/vocab.txt"
 iit_ta_ds="${ds_path}iit.ta/"
 
-iit_ur_ref="${iit_path}ur/vocab.txt"
-iit_ur_ds="${ds_path}iit.ur/"
-
 
 #-----------------------------------bangla-----------------------------------------------
 #-----------------------------------natrual---------------------------------------------
-#python datasets/bangla_writing.py $bw_ref $ds_path
-#python datagen.py $bw_ds "bangla"
-#python datasets/boise_state.py $bs_ref $ds_path
-#python datagen.py $bs_ds "bangla"
-#python datasets/bn_htr.py $bh_ref $ds_path
-#python datagen.py $bh_ds "bangla"
+python datasets/bangla_writing.py $bw_ref $ds_path
+python datagen.py $bw_ds "bangla"
+python datasets/boise_state.py $bs_ref $ds_path
+python datagen.py $bs_ds "bangla"
+python datasets/bn_htr.py $bh_ref $ds_path
+python datagen.py $bh_ds "bangla"
 python datasets/iit_indic.py $iit_bn_ref $ds_path
 python datagen.py $iit_bn_ds "bangla"
-python datagen.py $iit_bn_test_ds "bangla" --iden "iit.bn.test"
 #-----------------------------------natrual---------------------------------------------
 #-----------------------------------synthetic------------------------------------------
 #python datagen_synth.py $data_dir "bangla" "printed" $ds_path --num_samples 1000000
@@ -63,16 +55,20 @@ python datagen.py $iit_bn_test_ds "bangla" --iden "iit.bn.test"
 
 #-----------------------------------indic-----------------------------------------------
 python datasets/iit_indic.py $iit_gu_ref $ds_path
-python datasets/iit_indic.py $iit_kn_ref $ds_path
+python datagen.py $iit_gu_ds "gujrati"
 python datasets/iit_indic.py $iit_ma_ref $ds_path
+python datagen.py $iit_na_ds "malyalam"
 python datasets/iit_indic.py $iit_od_ref $ds_path
+python datagen.py $iit_od_ds "odiya"
 python datasets/iit_indic.py $iit_pn_ref $ds_path
+python datagen.py $iit_pn_ds "panjabi"
 python datasets/iit_indic.py $iit_ta_ref $ds_path
-python datasets/iit_indic.py $iit_ur_ref $ds_path
+python datagen.py $iit_ta_ds "tamil"
+
 #-----------------------------------indic-----------------------------------------------
 
 #-----------------------------------storing-----------------------------------------------
-python create_recs.py $iit_bn_ds "iit.bn" 
+#python create_recs.py $iit_bn_ds "iit.bn" 
 #python create_recs.py $bw_ds "bw" 
 #python create_recs.py $bh_ds "bh" 
 #python create_recs.py $bs_ds "bs" 

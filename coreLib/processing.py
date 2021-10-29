@@ -201,12 +201,31 @@ def create_folds(df,num_folds):
         creates folding info
     '''
     sources=df.source.unique()
+    # check for "test" data in sources
+    test_sources=[src for src in sources if "test" is sources]
+    if len(test_sources)>0:
+        LOG_INFO(f"Test unique sources:{len(test_sources)}")
+        sources=[src for src in sources if src not in test_sources]
+        random.shuffle(test_sources)
     random.shuffle(sources)
     LOG_INFO(f"unique sources:{len(sources)}")
-    len_folds=len(sources)//num_folds
-    for i in range(0, len(sources),len_folds):
-        fold_src= sources[i:i + len_folds]
-        df.source=df.source.progress_apply(lambda x:x if x not in fold_src else f"fold_{i//len_folds}")
+    if len(test_sources)>0:
+        len_folds=len(sources)//(num_folds-1)
+    else:    
+        len_folds=len(sources)//num_folds
+    # test fold
+    if len(test_sources)>0:
+        LOG_INFO("Test sources Fold 0")
+        df.source=df.source.progress_apply(lambda x:x if x not in test_sources else "fold_0")
+        for i in range(0, len(sources),len_folds):
+            fold_src= sources[i:i + len_folds]
+            df.source=df.source.progress_apply(lambda x:x if x not in fold_src else f"fold_{1+(i//len_folds)}")
+
+    else:
+        for i in range(0, len(sources),len_folds):
+            fold_src= sources[i:i + len_folds]
+            df.source=df.source.progress_apply(lambda x:x if x not in fold_src else f"fold_{i//len_folds}")
+        
     df.source=df.source.progress_apply(lambda x:f"fold_{num_folds-1}" if int(x.split("_")[-1])==num_folds else x)
     return df
 #---------------------------------------------------------------
