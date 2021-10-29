@@ -99,6 +99,7 @@ class GraphemeParser(object):
         self.cds=language.consonant_diacritics
         self.mds=language.modifiers
         self.connector=language.connector
+        self.allow_conn_ending=language.allow_conn_ending
         # error check -- type
         assert type(self.vds)==list,"Vowel Diacritics Is not a list"
         assert type(self.cds)==list,"Consonant Diacritics Is not a list"
@@ -177,7 +178,7 @@ class GraphemeParser(object):
             graphemes.append(grapheme)
         return graphemes
 
-    def process(self,word,return_graphemes=False):
+    def process(self,word,return_graphemes=False,debug=False):
         '''
             processes a word for creating:
             if return_graphemes=False (default):
@@ -186,10 +187,18 @@ class GraphemeParser(object):
                 * grapheme 
         '''
         try:
+            end_conn=False
             decomp=[ch for ch in word]
+            if self.allow_conn_ending and decomp[-1]==self.connector:
+                decomp=decomp[:-1]
+                end_conn=True
+                
             decomp=self.get_root_from_decomp(decomp)
             if return_graphemes:
-                return self.get_graphemes_from_decomp(decomp)
+                graphemes=self.get_graphemes_from_decomp(decomp)
+                if end_conn:
+                    graphemes+=[self.connector]
+                return graphemes
             else:
                 components=[]
                 for comp in decomp:
@@ -204,6 +213,10 @@ class GraphemeParser(object):
                         components.append(comp)
                         if cd_val is not None:
                             components.append(cd_val)
+                if end_conn:
+                    components+=[self.connector]
                 return components
         except Exception as e:
-           print(word)                        
+            if debug:
+                print(e)
+            print(word)                        

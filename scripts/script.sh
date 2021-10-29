@@ -4,9 +4,9 @@ bw_ref="/home/apsisdev/ansary/DATASETS/RAW/bangla_writing/converted/converted/"
 bh_ref="/home/apsisdev/ansary/DATASETS/RAW/BN-HTR/"
 bs_ref="/home/apsisdev/ansary/DATASETS/RAW/BanglaC/README.txt"
 iit_path="/home/apsisdev/Rezwan/cvit_iiit-indic/"
+num_samples=20
+num_hw_samples=500000
 
-#iit_path="/media/ansary/DriveData/Work/APSIS/datasets/__raw__/bengal/iiit-indic/"
-#base_path="/media/ansary/DriveData/Work/APSIS/datasets/GVU/"
 #-----------------------------------------------------------------------------------------------
 data_dir="${base_path}data/"
 ds_path="${base_path}datasets/"
@@ -48,22 +48,31 @@ python datasets/iit_indic.py $iit_bn_ref $ds_path
 python datagen.py $iit_bn_ds "bangla"
 #-----------------------------------natrual---------------------------------------------
 #-----------------------------------synthetic------------------------------------------
-#python datagen_synth.py $data_dir "bangla" "printed" $ds_path --num_samples 1000000
-#python datagen_synth.py $data_dir "bangla" "handwritten" $ds_path --num_samples 500000
+#python datagen_synth.py $data_dir "bangla" "printed" $ds_path --num_samples $num_samples
+#python datagen_synth.py $data_dir "bangla" "handwritten" $ds_path --num_samples $num_hw_samples
 #-----------------------------------synthetic------------------------------------------
 #-----------------------------------bangla-----------------------------------------------
 
+
 #-----------------------------------indic-----------------------------------------------
-python datasets/iit_indic.py $iit_gu_ref $ds_path
-python datagen.py $iit_gu_ds "gujrati"
-python datasets/iit_indic.py $iit_ma_ref $ds_path
-python datagen.py $iit_na_ds "malyalam"
-python datasets/iit_indic.py $iit_od_ref $ds_path
-python datagen.py $iit_od_ds "odiya"
-python datasets/iit_indic.py $iit_pn_ref $ds_path
-python datagen.py $iit_pn_ds "panjabi"
-python datasets/iit_indic.py $iit_ta_ref $ds_path
-python datagen.py $iit_ta_ds "tamil"
+#python datasets/iit_indic.py $iit_gu_ref $ds_path
+#python datagen.py $iit_gu_ds "gujrati"
+#python datasets/iit_indic.py $iit_ma_ref $ds_path
+#python datagen.py $iit_na_ds "malyalam"
+#python datasets/iit_indic.py $iit_od_ref $ds_path
+#python datagen.py $iit_od_ds "odiya"
+#python datasets/iit_indic.py $iit_pn_ref $ds_path
+#python datagen.py $iit_pn_ds "panjabi"
+#python datasets/iit_indic.py $iit_ta_ref $ds_path
+#python datagen.py $iit_ta_ds "tamil"
+
+python datagen_synth.py $data_dir "gujrati" "printed" $ds_path --num_samples $num_samples
+python datagen_synth.py $data_dir "malyalam" "printed" $ds_path --num_samples $num_samples
+python datagen_synth.py $data_dir "odiya" "printed" $ds_path --num_samples $num_samples
+python datagen_synth.py $data_dir "panjabi" "printed" $ds_path --num_samples $num_samples
+python datagen_synth.py $data_dir "tamil" "printed" $ds_path --num_samples $num_samples
+python datagen_synth.py $data_dir "hindi" "printed" $ds_path --num_samples $num_samples
+
 
 #-----------------------------------indic-----------------------------------------------
 
