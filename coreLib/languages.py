@@ -223,7 +223,7 @@ class gujrati:
     vowel_diacritics       =    ['ૢ', 'ૣ', 'ૃ', 'ૄ', 'ા', 'િ', 'ી', 'ુ', 'ૂ', 'ૃ', 'ૄ', 'ૅ', 'ે', 'ૈ', 'ૉ', 'ો', 'ૌ' ] 
     vocalics               =    []
     # vocalics added with vowel_diacritics here
-    consonant_diacritics   =    ['ૺ', 'ૻ', 'ૼ', '૽', '૾', '૿', 'ઁ', 'ં', 'ઃ']+vocalics
+    consonant_diacritics   =    ['ૺ', 'ૻ', 'ૼ', '૽', '૾', '૿', 'ઁ', 'ં', 'ઃ']
     modifiers              =    []
     connector              =    '્'
     special_charecters     =    [connector,'\u200d']
@@ -331,7 +331,7 @@ class panjabi:
     # for grapheme decomp
     vowel_diacritics       =    ['ੀ', 'ੂ', 'ਿ', 'ੁ', 'ੇ', 'ੋ', 'ੈ', 'ੌ', 'ਾ' ]
     vocalics               =    []
-    consonant_diacritics   =    ['ੰ', 'ਂ','ੱ', 'ੑ', 'ੵ', 'ਃ']+vocalics # last one from sikh holy book. # second one also historical
+    consonant_diacritics   =    ['ੰ', 'ਂ','ੱ', 'ੑ', 'ੵ', 'ਃ']# last one from sikh holy book. # second one also historical
     modifiers              =    []
     connector              =    '੍' 
     special_charecters     =    [connector,'\u200d', '\u200c' ]
@@ -389,9 +389,9 @@ class odiya:
                                  '/', ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`',
                                  '{', '|', '}', '~', '।', '॥'] 
     # for grapheme decomp
-    vowel_diacritics       =    ['ି', 'ୀ', 'ୁ', 'ୂ', 'େ', 'ୋ', 'ା', 'ୈ', 'ୌ', 'ୖ', 'ୗ' ] 
-    vocalics               =    ['ୃ', 'ୄ', 'ୢ', 'ୣ']
-    consonant_diacritics   =    ['ଂ', 'ଁ', 'ଃ']+vocalics  
+    vowel_diacritics       =    ['ି', 'ୀ', 'ୁ', 'ୂ', 'େ', 'ୋ', 'ା', 'ୈ', 'ୌ', 'ୖ', 'ୗ' , 'ୃ', 'ୄ', 'ୢ', 'ୣ'] 
+    vocalics               =    []
+    consonant_diacritics   =    ['ଂ', 'ଁ', 'ଃ'] 
     modifiers              =    []
     connector              =    '୍' 
     special_charecters     =    [connector,'\u200d', '\u200c']
@@ -604,9 +604,9 @@ class malyalam:
                                  '/', ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`',
                                  '{', '|', '}', '~', '।', '॥'] 
     # for grapheme decomp
-    vowel_diacritics       =    ['െ', 'േ',  'ൈ', 'ൊ', 'ോ', 'ൌ', 'ി', 'ീ', 'ു', 'ൂ', 'ാ', 'ൗ']
-    vocalics               =    ['ൃ']
-    consonant_diacritics   =    ['ഃ', 'ം', 'ൎ']+vocalics # not used much
+    vowel_diacritics       =    ['െ', 'േ',  'ൈ', 'ൊ', 'ോ', 'ൌ', 'ി', 'ീ', 'ു', 'ൂ', 'ാ', 'ൗ', 'ൃ']
+    vocalics               =    []
+    consonant_diacritics   =    ['ഃ', 'ം', 'ൎ'] # not used much
     modifiers              =    []
     connector              =    '്' # yes, this shit is malayalam hoshonto -_- 
     special_charecters     =    [connector,'\u200d', '\u200c']
