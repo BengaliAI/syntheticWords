@@ -215,6 +215,7 @@ class GraphemeParser(object):
                             components.append(cd_val)
                 if end_conn:
                     components+=[self.connector]
+                components=[comp for comp in components if comp!='']
                 return components
         except Exception as e:
             if debug:
