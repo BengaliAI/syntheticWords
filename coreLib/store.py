@@ -63,7 +63,14 @@ def toTfrecord(df,rnum,rec_path):
             serialized=example.SerializeToString()
             writer.write(serialized)  
 
-def createRecords(data,save_path,tf_size=10240):
+def eval_nonzero(x,max_len):
+    d=[i for i in x if i>0]
+    if len(d)>max_len:
+        return None
+    else:
+        return x[:max_len] 
+
+def createRecords(data,save_path,tf_size=10240,max_len=32):
     '''
         creates tf records:
         args:
@@ -74,7 +81,10 @@ def createRecords(data,save_path,tf_size=10240):
         data=pd.read_csv(data)
         for col in eval_cols:
             data[col]=data[col].progress_apply(lambda x: literal_eval(x))
-    
+    for col in ["pru_label","prg_label"]:
+        data[col]=data[col].progress_apply(lambda x:eval_nonzero(x,max_len))
+    data.dropna(inplace=True)
+
     if "source" not in data.columns:
         LOG_INFO(f"Creating TFRECORDS No folds:{save_path}")
         for idx in tqdm(range(0,len(data),tf_size)):

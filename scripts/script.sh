@@ -47,6 +47,14 @@ iit_hn_ref="/home/apsisdev/Rezwan/IIIT-HW-Dev_v1/lexicon.txt"
 iit_hn_ds="${ds_path}iit.hn/"
 iit_hn_rec="${iit_hn_ds}iit.hn/"
 
+hn_pr_ds="${ds_path}hindi_printed/"
+ta_pr_ds="${ds_path}tamil_printed/"
+pn_pr_ds="${ds_path}panjabi_printed/"
+od_pr_ds="${ds_path}odiya_printed/"
+ma_pr_ds="${ds_path}malyalam_printed/"
+gu_pr_ds="${ds_path}gujrati_printed/"
+
+
 #-----------------------------------bangla-----------------------------------------------
 #-----------------------------------natrual---------------------------------------------
 #python datasets/bangla_writing.py $bw_ref $ds_path
@@ -74,36 +82,52 @@ iit_hn_rec="${iit_hn_ds}iit.hn/"
 # python create_vocab.py "tamil"
 
 
-python datasets/iit_v1.py $iit_hn_ref $ds_path --iden "iit.hn"
-python datagen.py $iit_hn_ds "hindi"
-python datasets/iit_indic.py $iit_gu_ref $ds_path
-python datagen.py $iit_gu_ds "gujrati"
-python datasets/iit_indic.py $iit_ma_ref $ds_path
-python datagen.py $iit_ma_ds "malyalam"
-python datasets/iit_indic.py $iit_od_ref $ds_path
-python datagen.py $iit_od_ds "odiya"
-python datasets/iit_indic.py $iit_pn_ref $ds_path
-python datagen.py $iit_pn_ds "panjabi"
-python datasets/iit_indic.py $iit_ta_ref $ds_path
-python datagen.py $iit_ta_ds "tamil"
+# python datasets/iit_v1.py $iit_hn_ref $ds_path --iden "iit.hn"
+# python datagen.py $iit_hn_ds "hindi"
+# python datasets/iit_indic.py $iit_gu_ref $ds_path
+# python datagen.py $iit_gu_ds "gujrati"
+# python datasets/iit_indic.py $iit_ma_ref $ds_path
+# python datagen.py $iit_ma_ds "malyalam"
+# python datasets/iit_indic.py $iit_od_ref $ds_path
+# python datagen.py $iit_od_ds "odiya"
+# python datasets/iit_indic.py $iit_pn_ref $ds_path
+# python datagen.py $iit_pn_ds "panjabi"
+# python datasets/iit_indic.py $iit_ta_ref $ds_path
+# python datagen.py $iit_ta_ds "tamil"
 
-python datagen_synth.py $data_dir "gujrati" "printed" $ds_path --num_samples $num_samples
-python datagen_synth.py $data_dir "malyalam" "printed" $ds_path --num_samples $num_samples
-python datagen_synth.py $data_dir "odiya" "printed" $ds_path --num_samples $num_samples
-python datagen_synth.py $data_dir "panjabi" "printed" $ds_path --num_samples $num_samples
-python datagen_synth.py $data_dir "tamil" "printed" $ds_path --num_samples $num_samples
-python datagen_synth.py $data_dir "hindi" "printed" $ds_path --num_samples $num_samples
+# python datagen_synth.py $data_dir "gujrati" "printed" $ds_path --num_samples $num_samples
+# python datagen_synth.py $data_dir "malyalam" "printed" $ds_path --num_samples $num_samples
+# python datagen_synth.py $data_dir "odiya" "printed" $ds_path --num_samples $num_samples
+# python datagen_synth.py $data_dir "panjabi" "printed" $ds_path --num_samples $num_samples
+# python datagen_synth.py $data_dir "tamil" "printed" $ds_path --num_samples $num_samples
+# python datagen_synth.py $data_dir "hindi" "printed" $ds_path --num_samples $num_samples
 
 
 #-----------------------------------indic-----------------------------------------------
 
 #-----------------------------------storing-----------------------------------------------
-#python create_recs.py $iit_bn_ds "iit.bn" 
-#python create_recs.py $bw_ds "bw" 
-#python create_recs.py $bh_ds "bh" 
-#python create_recs.py $bs_ds "bs" 
-#python create_recs.py $bn_pr_ds "bangla_printed"
-#python create_recs.py $bn_hr_ds "bangla_handwritten"
+# python create_recs.py $iit_bn_ds "iit.bn" 
+# python create_recs.py $iit_hn_ds "iit.hn" 
+# python create_recs.py $bw_ds "bw" 
+# python create_recs.py $bh_ds "bh" 
+# python create_recs.py $bs_ds "bs" 
+# python create_recs.py $bn_pr_ds "bangla_printed"
+# python create_recs.py $bn_hr_ds "bangla_handwritten"
+# python create_recs.py $hn_pr_ds "hindi_printed"
+python create_recs.py $ta_pr_ds "tamil_printed"
+python create_recs.py $ma_pr_ds "malyalam_printed"
+python create_recs.py $od_pr_ds "odiya_printed"
+python create_recs.py $gu_pr_ds "gujrati_printed"
+python create_recs.py $pn_pr_ds "panjabi_printed"
+
+python create_recs.py $iit_ta_ds "iit.ta"
+python create_recs.py $iit_ma_ds "iit.ma"
+python create_recs.py $iit_od_ds "iit.od"
+python create_recs.py $iit_gu_ds "iit.gu"
+python create_recs.py $iit_pn_ds "iit.pn"
+
+
+
 #-----------------------------------sroting-----------------------------------------------
 
 
